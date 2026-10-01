@@ -1,0 +1,29 @@
+{
+  "name": "yuvarajan-portfolio",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "description": "Yuvarajan J - Portfolio V2: Animated developer-style portfolio with futuristic cybersecurity/developer dashboard aesthetic",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --ext ts,tsx",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css,html}\""
+  },
+  "keywords": [
+    "portfolio",
+    "developer",
+    "typescript",
+    "vite",
+    "animated"
+  ],
+  "author": "Yuvarajan J",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^26.6.3",
+    "terser": "^5.31.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.3.0"
+  }
+}

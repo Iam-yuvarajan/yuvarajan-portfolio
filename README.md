@@ -17,6 +17,7 @@ The script installs dependencies on first run.
 
 - **Content:** every bit of personal text is in `data/content.ts`. Values that are still missing are listed in `MISSING.md`.
 - **API:** `GET /api/projects`, `/api/stats`, `/api/experience`, `/api/skills`, `GET|POST /api/notes`.
+- **Notes bot:** the click-only Q&A panel in Notes. Questions and pre-written answers are in `askBot` in `data/content.ts`; there is no text input and no live model call.
 - **Resume:** served from `public/Yuvarajan-J-Resume.pdf`.
 - **Project links:** only the links listed in `projects[].links` in `data/content.ts` are published (YUVA AI live demo, Trust-CV and Sollunga Bot source). Discovery Agent has none and shows as private. Set `profile.showGithub = false` to hide the GitHub profile everywhere. Social buttons appear only for links that are non-empty in `profile.links` (LinkedIn is empty for now).
 

@@ -30,7 +30,6 @@ export default function Page() {
         <Journey initial={getExperience()} />
         <Stack initial={getSkills()} />
         <Shell />
-        {/* TODO: re-add Ask section between Shell and Notes */}
         <Notes />
         <Contact />
       </main>

@@ -77,9 +77,9 @@ export const profile = {
   firstName: 'Yuvarajan',
   lastName: 'J',
   initials: 'YJ',
-  role: 'AI & Web Application Developer · Vibe Coder',
-  shortRole: 'AI & Web Developer',
-  availability: 'Open to AI & software jobs · internships',
+  role: 'AI Engineer · ECE Student',
+  shortRole: 'AI Engineer',
+  availability: 'Open to AI engineer roles · internships',
   passStatus: 'open to work',
   timezone: 'IST (Asia/Kolkata)',
   timezoneShort: 'IST',
@@ -106,8 +106,8 @@ export const site = {
   url: 'https://jyuvarajan26.vercel.app',
   title: 'Yuvarajan J',
   description:
-    'Yuvarajan J: AI & web application developer from Hosur, Tamil Nadu. ECE student at Sri Sairam College of Engineering, Bengaluru, and SIH 2026 top 40 finalist. Projects, journey, stack and contact.',
-  keywords: ['Yuvarajan J', 'Yuvarajan', 'AI developer', 'web application developer', 'Python', 'Hosur', 'Bengaluru', 'portfolio'],
+    'Yuvarajan J: AI engineer and ECE student from Hosur, Tamil Nadu. Builds AI tools and web apps with Python, JavaScript and LLMs. SIH 2026 top 40 finalist. Open to AI engineer roles and internships.',
+  keywords: ['Yuvarajan J', 'Yuvarajan', 'AI engineer', 'AI developer', 'web application developer', 'ECE', 'Python', 'Hosur', 'Bengaluru', 'portfolio'],
   copyright: '© 2026 Yuvarajan J',
   builtWith: 'Designed & built by hand. Next.js, GSAP, plain CSS.',
 };
@@ -338,8 +338,11 @@ export const stages: Stage[] = [
   // {{INTERNSHIP_OR_EXPERIENCE}}: add Stage entries here when supplied (none yet, so none rendered).
 ];
 
-/** Spoken languages. Empty, so the block is hidden. */
-export const languages: Language[] = [];
+/** Spoken languages, shown beside education. */
+export const languages: Language[] = [
+  { name: 'Tamil', level: 'Native', note: 'Mother tongue; everyday and technical conversation.' },
+  { name: 'English', level: 'Fluent', note: 'Working language for code, documentation and interviews.' },
+];
 
 /* ------------------------------------------------------------------ stack */
 
@@ -384,6 +387,54 @@ export const notes = {
   placeholder: 'Say hi, drop a hot take, ask a question…',
   footnote: 'Public on this site. Removal: email me.',
   maxLength: 280,
+};
+
+/* ---------------------------------------------------------------- ask bot */
+
+/** The click-only interview bot on the notes page. Answers are pre-written, never generated. */
+export const askBot = {
+  kicker: 'ask-yuva',
+  status: 'preset answers · no live model',
+  sub: 'Pick a question. The bot answers from my notes — no typing needed.',
+  empty: 'Choose a question above to see the answer.',
+  clear: 'clear answer',
+  questions: [
+    {
+      id: 'roles',
+      q: 'What roles are you looking for?',
+      a: 'AI engineer or similar AI/software roles, plus internships. I am an ECE student at Sri Sairam College of Engineering, Bengaluru, and I build AI tools end to end.',
+    },
+    {
+      id: 'stack',
+      q: 'What is your main stack?',
+      a: 'Python for AI and backend work, JavaScript/Node/Express for web, FastAPI for services, and Groq or Gemini for LLMs. SQLite when a project needs storage.',
+    },
+    {
+      id: 'trustcv',
+      q: 'Walk me through Trust-CV.',
+      a: 'It detects poisoned, fake and duplicate images, gives each image a trust score, quarantines suspicious files and runs a live camera mode. It was a *Smart India Hackathon 2026 top-40 finalist* in selection.',
+    },
+    {
+      id: 'sollunga',
+      q: 'What does Sollunga Bot do?',
+      a: 'It takes shop orders over Telegram or WhatsApp in Tamil, Tanglish or English, including voice notes. Python prices and stock-checks every order, then the owner accepts or rejects it. There is a FastAPI dashboard for stock and sales.',
+    },
+    {
+      id: 'yuva',
+      q: 'What is YUVA AI?',
+      a: 'A password-protected AI companion with creator, brother and friend modes, voice input/output and persistent memory. Vanilla JavaScript frontend, Node/Express backend, Groq for the model.',
+    },
+    {
+      id: 'hire',
+      q: 'Why should we hire you?',
+      a: 'I ship working builds, not just prototypes. I have taken four AI and web projects from idea to a usable product across the LLM, backend and UI. I am early in my career and looking for a team where I can learn fast and own real work.',
+    },
+    {
+      id: 'contact',
+      q: 'How do I contact you?',
+      a: `Email ${profile.email}. The resume download and social links are in the header and contact section.`,
+    },
+  ],
 };
 
 /* ---------------------------------------------------------------- contact */

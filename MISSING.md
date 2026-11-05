@@ -13,9 +13,8 @@ tech + outcome) are filled.
 - **Upstash Redis on Vercel:** not connected yet, so the live notes wall shows "not connected yet". See README → "Adding Upstash on Vercel".
 
 - **LinkedIn URL:** `profile.links.linkedin` is empty. The LinkedIn button, palette action and shell line appear automatically once it's filled.
-- **Domain:** none yet. The loader and shell use the display hostname `yuvarajan`, and metadata uses no absolute URLs. When there is a domain, add `metadataBase` in `app/layout.tsx` if you want absolute OG/canonical URLs.
+- **Custom domain:** none yet. `site.url` is the Vercel address and `metadataBase` is already set in `app/layout.tsx`; update `site.url` when a custom domain is ready.
 - **Internship / work experience:** none supplied, so no stage is rendered.
-- **Spoken languages:** `languages` is empty, so the block is hidden.
 
 ## Provisional design defaults (not marked on the page, change freely)
 
@@ -24,4 +23,4 @@ tech + outcome) are filled.
 
 ## Out of scope by design
 
-- The "Ask / Interview me, async" AI section. See `// TODO: re-add Ask section between Shell and Notes`.
+- A standalone "Ask / Interview me, async" section between Shell and Notes. A click-only bot now lives inside Notes (`components/AskBot.tsx`), with answers in `askBot` in `data/content.ts`.

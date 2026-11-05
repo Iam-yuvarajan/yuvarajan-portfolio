@@ -44,7 +44,7 @@ const personLd = {
   '@type': 'Person',
   name: profile.name,
   url: site.url,
-  jobTitle: 'AI & Web Application Developer',
+  jobTitle: profile.shortRole,
   email: `mailto:${profile.email}`,
   address: { '@type': 'PostalAddress', addressLocality: 'Hosur', addressRegion: 'Tamil Nadu', addressCountry: 'IN' },
   alumniOf: { '@type': 'CollegeOrUniversity', name: education.college.name },

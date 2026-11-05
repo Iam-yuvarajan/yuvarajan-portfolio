@@ -80,7 +80,6 @@ export const allSections = [
   { id: 'experience', nav: 'Journey', num: '02', world: 'server', path: '~/server/experience' },
   { id: 'stack', nav: 'Stack', num: '03', world: 'server', path: '~/server/stack' },
   { id: 'shell', nav: 'Shell', num: '04', world: 'server', path: '~/server/shell' },
-  // TODO: re-add Ask section between Shell and Notes
   { id: 'notes', nav: 'Notes', num: '05', world: 'agents', path: '~/agents/notes' },
   { id: 'contact', nav: 'Contact', num: '06', world: 'whoami', path: '~/whoami/contact' },
 ] as const satisfies readonly { id: string; nav: string; num: string; world: WorldId; path: string }[];

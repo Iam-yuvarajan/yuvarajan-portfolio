@@ -5,10 +5,10 @@ import { gsap } from 'gsap';
 import { tokensFor, worldById } from '@/data/worlds';
 import { registerCurtain, type Curtain, type Origin } from '@/lib/world';
 
-/** Timings (seconds). Total ≈ 0.5 + 0.08 + 0.42 = 1.0s. */
-const COVER = 0.5;
-const HOLD = 0.08;
-const REVEAL = 0.42;
+/** Timings (seconds). Total ≈ 0.46 + 0.12 + 0.36 = 0.94s. */
+const COVER = 0.46;
+const HOLD = 0.12;
+const REVEAL = 0.36;
 /** If anything goes wrong, the curtain is force-removed after this many ms. */
 const FAILSAFE_MS = 2500;
 
@@ -25,8 +25,8 @@ const circle = (r: number, o: Origin) => `circle(${r}px at ${o.x}px ${o.y}px)`;
  * 1. A layer in the target world's background grows from the click point (clip-path circle).
  * 2. While it covers the screen, `onCovered` swaps data-world and jumps to the section.
  *    The target world label (e.g. ~/server) flashes in the middle.
- * 3. The layer slides up and away to reveal the new world.
- * Only clip-path, transform and opacity are animated.
+ * 3. The layer fades away to reveal the new world.
+ * Only clip-path and opacity are animated.
  */
 export default function WorldCurtain() {
   const layer = useRef<HTMLDivElement>(null);
@@ -45,7 +45,7 @@ export default function WorldCurtain() {
       tl = null;
       covered = false;
       window.clearTimeout(failsafe);
-      gsap.set(el, { clearProps: 'clipPath,transform,visibility' });
+      gsap.set(el, { clearProps: 'clipPath,transform,visibility,opacity' });
       gsap.set(lab, { clearProps: 'opacity,transform' });
     };
 
@@ -75,19 +75,31 @@ export default function WorldCurtain() {
       };
       // Never leave the screen covered or the nav locked, whatever happens to the timeline.
       failsafe = window.setTimeout(() => {
-        swap();
-        finish();
+        try {
+          swap();
+        } finally {
+          finish();
+        }
       }, FAILSAFE_MS);
+
+      // If `onCovered` ever throws, the timeline still finishes and unlocks the nav.
+      const safeSwap = () => {
+        try {
+          swap();
+        } catch (err) {
+          console.error('[world] swap failed', err);
+        }
+      };
 
       tl = gsap
         .timeline({ onComplete: finish })
-        .set(el, { visibility: 'visible', yPercent: 0, clipPath: circle(0, o) })
+        .set(el, { visibility: 'visible', opacity: 1, yPercent: 0, clipPath: circle(0, o) })
         .set(lab, { opacity: 0, y: 12 })
         .to(el, { clipPath: circle(radiusFrom(o), o), duration: COVER, ease: 'expo.inOut' })
-        .to(lab, { opacity: 1, y: 0, duration: 0.3, ease: 'power3.out' }, COVER * 0.55)
-        .add(swap, COVER)
-        .to(lab, { opacity: 0, y: -12, duration: 0.2, ease: 'power3.in' }, COVER + HOLD)
-        .to(el, { yPercent: -100, duration: REVEAL, ease: 'power3.inOut' }, COVER + HOLD);
+        .to(lab, { opacity: 1, y: 0, duration: 0.28, ease: 'power3.out' }, COVER * 0.5)
+        .add(safeSwap, COVER)
+        .to(lab, { opacity: 0, y: -12, duration: 0.18, ease: 'power3.in' }, COVER + HOLD)
+        .to(el, { opacity: 0, duration: REVEAL, ease: 'power3.inOut' }, COVER + HOLD);
     };
 
     // A resize while covered: keep the circle reaching the farthest corner.

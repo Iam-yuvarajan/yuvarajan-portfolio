@@ -1,7 +1,7 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
-import { DEFAULT_WORLD, themeColors, worldOf, type WorldId } from '@/data/worlds';
+import { DEFAULT_WORLD, allSections, stepWorld, themeColors, worldById, worldOf, type WorldId } from '@/data/worlds';
 
 /**
  * The one place that changes the active world and section.
@@ -85,6 +85,33 @@ export function originFrom(e: { clientX: number; clientY: number; detail: number
 const centre = (): Origin => ({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
 
 /**
+ * First section of a world that actually exists in the document. Config order wins
+ * (`agents` → ask → notes), so a not-yet-built section is skipped, never crashed on.
+ */
+export function entryFor(world: WorldId): string | null {
+  const def = worldById(world);
+  return (
+    def.sections.find((id) => document.getElementById(id)) ??
+    allSections.find((s) => s.world === world)?.id ??
+    def.entry ??
+    null
+  );
+}
+
+/**
+ * The world switcher: one step through the fixed order, with the curtain growing
+ * from `origin`. Returns false when a transition is already running (click ignored).
+ */
+export function cycleWorld(step: number, origin?: Origin): boolean {
+  if (busy) return false;
+  const world = stepWorld(active.world, step);
+  const section = entryFor(world);
+  if (!section) return false;
+  goTo(section, { origin });
+  return true;
+}
+
+/**
  * Go to a section. If it lives in another world (and motion is allowed), the curtain covers the
  * screen first, the palette and scroll position change underneath, then it reveals the new world.
  * Same world, or reduced motion: swap + scroll straight away.
@@ -97,14 +124,20 @@ export function goTo(section: string, opts: { push?: boolean; origin?: Origin } 
 
   if (world !== active.world && curtain && !reduced()) {
     busy = true;
-    curtain({
-      world,
-      origin: opts.origin ?? centre(),
-      onCovered: () => jump(section, el, opts.push, true),
-      onDone: () => {
-        busy = false;
-      },
-    });
+    try {
+      curtain({
+        world,
+        origin: opts.origin ?? centre(),
+        onCovered: () => jump(section, el, opts.push, true),
+        onDone: () => {
+          busy = false;
+        },
+      });
+    } catch {
+      // A broken curtain must never eat the click: fall back to an instant swap.
+      busy = false;
+      jump(section, el, opts.push, false);
+    }
     return;
   }
   jump(section, el, opts.push, false);

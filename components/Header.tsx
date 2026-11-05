@@ -2,16 +2,15 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { profile } from '@/data/content';
-import { sections, worldById } from '@/data/worlds';
+import { sections, stepWorld, worldById } from '@/data/worlds';
 import { openPalette } from '@/lib/client';
-import { goTo, originFrom, useActive, type Origin } from '@/lib/world';
+import { cycleWorld, goTo, originFrom, useActive, type Origin } from '@/lib/world';
 
 const noop = () => () => {};
 
 export default function Header() {
   const { section, world } = useActive();
   const [open, setOpen] = useState(false);
-  const button = useRef<HTMLButtonElement>(null);
   const mobileButton = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const opener = useRef<HTMLButtonElement | null>(null);
@@ -45,7 +44,7 @@ export default function Header() {
     };
     const onDown = (e: PointerEvent) => {
       const t = e.target as Node;
-      if (panel.current?.contains(t) || button.current?.contains(t) || mobileButton.current?.contains(t)) return;
+      if (panel.current?.contains(t) || mobileButton.current?.contains(t)) return;
       setOpen(false);
     };
     document.addEventListener('keydown', onKey);
@@ -85,6 +84,12 @@ export default function Header() {
   };
 
   const worldPath = worldById(world).path;
+  const nextPath = worldById(stepWorld(world, 1)).path;
+
+  // One click = next world; shift-click = previous. The curtain grows from the pill.
+  const switchWorld = (e: React.MouseEvent<HTMLButtonElement>) => {
+    cycleWorld(e.shiftKey ? -1 : 1, originFrom(e, e.currentTarget));
+  };
 
   return (
     <header className="header">
@@ -114,19 +119,19 @@ export default function Header() {
             <kbd>K</kbd>
           </button>
           <button
-            ref={button}
             type="button"
             className="world-btn mono"
-            aria-haspopup="menu"
-            aria-expanded={open}
-            aria-controls="pages-menu"
-            aria-label={`Pages menu, current world ${worldPath}`}
-            onClick={() => toggleFrom(button.current)}
+            aria-label={`Switch world. Current: ${worldPath}. Next: ${nextPath}`}
+            title={`Next: ${nextPath}`}
+            onClick={switchWorld}
           >
             <span className="dot" aria-hidden="true" />
-            {worldPath}
-            <span className="world-btn__caret" aria-hidden="true">
-              ▾
+            <span className="world-btn__path">{worldPath}</span>
+            <span className="world-btn__next" aria-hidden="true">
+              <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3.5 8h8" />
+                <path d="M8.5 4.5 12 8l-3.5 3.5" />
+              </svg>
             </span>
           </button>
           <a className="btn btn--primary btn--sm hire" href={`mailto:${profile.email}`}>

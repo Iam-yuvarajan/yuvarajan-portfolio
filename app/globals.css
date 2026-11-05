@@ -481,34 +481,48 @@ kbd {
 }
 /* ------------------------------------------------------------- pages menu */
 
+/* World switcher pill: click = next world, no menu. */
 .world-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  height: 38px;
   font-size: 12px;
-  padding: 6px 12px;
+  padding: 0 12px;
   border: 1px dashed var(--line-strong);
   border-radius: 999px;
   background: transparent;
   min-width: 118px;
   color: var(--ink);
+  touch-action: manipulation;
+  transition: border-color 0.2s ease, color 0.3s ease, background-color 0.2s ease;
 }
 .world-btn:hover,
-.world-btn[aria-expanded='true'] {
+.world-btn:focus-visible {
   border-style: solid;
   border-color: var(--ink);
 }
+.world-btn:active {
+  transform: translateY(1px);
+}
 .world-btn .dot {
   background: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-soft);
+  box-shadow: 0 0 0 3px var(--accent-soft), 0 0 10px -2px var(--accent);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
-.world-btn__caret {
+.world-btn__path {
+  white-space: nowrap;
+}
+.world-btn__next {
+  display: inline-flex;
   margin-left: auto;
-  font-size: 10px;
-  transition: transform 0.2s var(--ease);
+  color: var(--ink-muted);
+  transition: color 0.2s ease, transform 0.2s var(--ease);
 }
-.world-btn[aria-expanded='true'] .world-btn__caret {
-  transform: rotate(180deg);
+.world-btn:hover .world-btn__next,
+.world-btn:focus-visible .world-btn__next {
+  color: var(--ink);
+  transform: translateX(2px);
 }
 .pages {
   position: absolute;
@@ -590,8 +604,7 @@ html.menu-open body {
 }
 
 @media (max-width: 960px) {
-  .nav,
-  .world-btn {
+  .nav {
     display: none;
   }
   .menu-btn {
@@ -604,6 +617,19 @@ html.menu-open body {
   }
   .header__inner {
     gap: 12px;
+  }
+}
+@media (max-width: 420px) {
+  .header__name {
+    font-size: 18px;
+  }
+  .header__tools {
+    gap: 8px;
+  }
+  .world-btn {
+    min-width: 0;
+    gap: 6px;
+    padding: 0 10px;
   }
 }
 
@@ -2316,7 +2342,7 @@ html.menu-open body {
   color: var(--curtain-ink, var(--ink));
   visibility: hidden;
   pointer-events: none;
-  will-change: clip-path, transform;
+  will-change: clip-path, opacity;
 }
 .curtain__label {
   margin: 0;

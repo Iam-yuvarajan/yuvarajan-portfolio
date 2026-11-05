@@ -9,22 +9,32 @@
 
 export type WorldId = 'client' | 'server' | 'agents' | 'whoami';
 
-export interface WorldDef {
+interface WorldSeed {
   id: WorldId;
   path: string;
   label: string;
-  /** Section a world jumps to from the ID card, menu or palette. */
-  entry: string;
+  /** Sections belonging to this world, in order. The first one is the entry point. */
+  sections: readonly string[];
   palette: { name: string; bg: string; ink: string; accent: string };
   bootLines: string[];
 }
 
-export const worlds: WorldDef[] = [
+export interface WorldDef extends WorldSeed {
+  /** First section of the world: where the switcher scrolls to. */
+  entry: string;
+}
+
+/**
+ * THE config object: order, palettes and section mapping all live here.
+ * Palettes expose the same tokens as `tokensFor` below (--bg, --surface, --text,
+ * --muted, --accent, --border), so editing bg / ink / accent here is enough.
+ */
+const seeds: WorldSeed[] = [
   {
     id: 'client',
     path: '~/client',
     label: 'Client',
-    entry: 'work',
+    sections: ['work'],
     palette: { name: 'paper + marker violet', bg: '#F5F0EB', ink: '#16130F', accent: '#5B34D9' },
     bootLines: ['[client] compiling client.tsx', '[client] palette: paper + marker violet'],
   },
@@ -32,7 +42,7 @@ export const worlds: WorldDef[] = [
     id: 'server',
     path: '~/server',
     label: 'Server',
-    entry: 'experience',
+    sections: ['experience', 'stack', 'shell'],
     palette: { name: 'terminal + phosphor green', bg: '#0A100C', ink: '#DDEFE2', accent: '#3DF58A' },
     bootLines: ['[server] mounting /api/projects /api/stats /api/experience', '[server] palette: terminal + phosphor green'],
   },
@@ -40,7 +50,8 @@ export const worlds: WorldDef[] = [
     id: 'agents',
     path: '~/agents',
     label: 'Agents',
-    entry: 'notes',
+    // `ask` is listed first by design; it is simply skipped until that section exists.
+    sections: ['ask', 'notes'],
     palette: { name: 'deep indigo + amber', bg: '#13132E', ink: '#ECEBFA', accent: '#FFB547' },
     bootLines: ['[agents] pinning notes to the wall', '[agents] palette: deep indigo + amber'],
   },
@@ -48,11 +59,22 @@ export const worlds: WorldDef[] = [
     id: 'whoami',
     path: '~/whoami',
     label: 'Whoami',
-    entry: 'contact',
-    palette: { name: 'cream + coral', bg: '#FFF3E4', ink: '#1E1411', accent: '#F2553F' },
+    sections: ['contact'],
+    palette: { name: 'cream + coral', bg: '#FFF4E8', ink: '#1E1411', accent: '#F4583F' },
     bootLines: ['[whoami] resolving contact ... ok', '[whoami] palette: cream + coral'],
   },
 ];
+
+/** Worlds in switching order: client → server → agents → whoami → client. */
+export const worlds: WorldDef[] = seeds.map((w) => ({ ...w, entry: w.sections[0] }));
+
+export const WORLD_ORDER: WorldId[] = worlds.map((w) => w.id);
+
+/** The world `step` places away in the fixed order (wraps in both directions). */
+export function stepWorld(id: WorldId, step: number): WorldId {
+  const i = WORLD_ORDER.indexOf(id);
+  return WORLD_ORDER[(i + step + WORLD_ORDER.length) % WORLD_ORDER.length];
+}
 
 /** Every section on the page, in order. `top` is the hero and is not in the nav. */
 export const allSections = [

@@ -173,7 +173,7 @@ export default function Journey({ initial }: { initial: ExperiencePayload }) {
           </div>
           {languages.length > 0 && (
             <div className="edu">
-              <p className="edu__kicker mono">Languages</p>
+              <p className="edu__kicker mono">Spoken languages</p>
               <ul className="langs">
                 {languages.map((l) => (
                   <li key={l.name}>

@@ -79,7 +79,7 @@ export const profile = {
   initials: 'YJ',
   role: 'AI Engineer · ECE Student',
   shortRole: 'AI Engineer',
-  availability: 'Open to AI engineer roles · internships',
+  availability: 'Open to AI roles · internships',
   passStatus: 'open to work',
   timezone: 'IST (Asia/Kolkata)',
   timezoneShort: 'IST',

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { profile } from '@/data/content';
 import { sections, stepWorld, worldById } from '@/data/worlds';
 import { openPalette } from '@/lib/client';
-import { cycleWorld, goTo, originFrom, useActive, type Origin } from '@/lib/world';
+import { cycleWorld, goTo, useActive } from '@/lib/world';
 
 const noop = () => () => {};
 
@@ -56,10 +56,10 @@ export default function Header() {
     };
   }, [open]);
 
-  const choose = (id: string, origin: Origin) => {
+  const choose = (id: string) => {
     close(false);
     // Let the panel close and the scroll lock lift before scrolling, so nothing interrupts it.
-    requestAnimationFrame(() => requestAnimationFrame(() => goTo(id, { origin })));
+    requestAnimationFrame(() => requestAnimationFrame(() => goTo(id)));
   };
 
   // Arrow keys move between menu items.
@@ -86,9 +86,9 @@ export default function Header() {
   const worldPath = worldById(world).path;
   const nextPath = worldById(stepWorld(world, 1)).path;
 
-  // One click = next world; shift-click = previous. The curtain grows from the pill.
+  // One click = next world; shift-click = previous.
   const switchWorld = (e: React.MouseEvent<HTMLButtonElement>) => {
-    cycleWorld(e.shiftKey ? -1 : 1, originFrom(e, e.currentTarget));
+    cycleWorld(e.shiftKey ? -1 : 1);
   };
 
   return (
@@ -170,7 +170,7 @@ export default function Header() {
             role="menuitem"
             className={`pages__item${section === s.id ? ' is-active' : ''}`}
             aria-current={section === s.id ? 'true' : undefined}
-            onClick={(e) => choose(s.id, originFrom(e))}
+            onClick={() => choose(s.id)}
           >
             <span className="pages__num mono">{s.num}</span>
             <span className="pages__label">{s.nav}</span>

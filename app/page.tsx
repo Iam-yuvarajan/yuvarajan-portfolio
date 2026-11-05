@@ -12,7 +12,7 @@ import Footer from '@/components/Footer';
 import Motion from '@/components/Motion';
 import Toaster from '@/components/Toaster';
 import WorldSpy from '@/components/WorldSpy';
-import WorldCurtain from '@/components/WorldCurtain';
+import WorldSweep from '@/components/WorldSweep';
 import { getExperience, getProjects, getSkills } from '@/lib/data';
 
 export default function Page() {
@@ -38,7 +38,7 @@ export default function Page() {
       <Motion />
       <Toaster />
       <WorldSpy />
-      <WorldCurtain />
+      <WorldSweep />
     </>
   );
 }

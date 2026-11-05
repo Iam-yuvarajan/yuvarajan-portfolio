@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { allSections } from '@/data/worlds';
-import { goTo, hydrateActive, originFrom, spySection } from '@/lib/world';
+import { goTo, hydrateActive, spySection } from '@/lib/world';
 
 /** The section whose box contains the middle of the viewport. */
 function sectionAtCenter(): string {
@@ -78,8 +78,8 @@ export default function WorldSpy() {
       const id = a.getAttribute('href')!.slice(1);
       if (!allSections.some((s) => s.id === id)) return;
       e.preventDefault();
-      // The curtain grows from the click / tap point (or the link's centre for keyboard).
-      goTo(id, { origin: originFrom(e, a) });
+      // Every in-page link goes through the same sweep + HUD as the world pill.
+      goTo(id);
     };
     // Back / forward: the browser restores scroll; settle on whatever is in the middle afterwards.
     const onPop = () => window.setTimeout(() => schedule(sectionAtCenter()), 60);

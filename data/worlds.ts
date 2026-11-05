@@ -19,10 +19,7 @@ interface WorldSeed {
   bootLines: string[];
 }
 
-export interface WorldDef extends WorldSeed {
-  /** First section of the world: where the switcher scrolls to. */
-  entry: string;
-}
+export type WorldDef = WorldSeed;
 
 /**
  * THE config object: order, palettes and section mapping all live here.
@@ -66,7 +63,7 @@ const seeds: WorldSeed[] = [
 ];
 
 /** Worlds in switching order: client → server → agents → whoami → client. */
-export const worlds: WorldDef[] = seeds.map((w) => ({ ...w, entry: w.sections[0] }));
+export const worlds: WorldDef[] = seeds;
 
 export const WORLD_ORDER: WorldId[] = worlds.map((w) => w.id);
 
@@ -97,6 +94,16 @@ export const worldOf = (sectionId: string): WorldId =>
   (allSections.find((s) => s.id === sectionId)?.world as WorldId) ?? 'client';
 export const worldById = (id: WorldId) => worlds.find((w) => w.id === id)!;
 export const DEFAULT_WORLD: WorldId = 'client';
+
+/** First section of a world that exists in the section registry (SSR-safe). */
+export function entrySection(id: WorldId): string {
+  const def = worldById(id);
+  return (
+    allSections.find((s) => s.world === id && def.sections.includes(s.id))?.id ??
+    allSections.find((s) => s.world === id)?.id ??
+    def.sections[0]
+  );
+}
 
 /* ===================================================================== colour */
 
@@ -224,7 +231,7 @@ export function contrastPairs(t: Tokens): [string, string, number][] {
   return pairs.map(([fg, bg]) => [fg, bg, contrast(t[fg], t[bg])]);
 }
 
-/** Palette crossfade for plain scrolling (no curtain). */
+/** Palette crossfade for plain scrolling (no sweep). */
 const TRANSITION_MS = 500;
 const LOADER_FADE_MS = 250;
 
@@ -250,8 +257,6 @@ export function worldsCss(): string {
     `html{transition:${fade(TRANSITION_MS)}}` +
     // Each loader phase lasts ~650ms, so its crossfade must be short enough to settle.
     `.loader{transition:${fade(LOADER_FADE_MS)},opacity .45s,transform .45s}` +
-    // While the curtain covers the screen the palette swaps instantly (no crossfade underneath).
-    `html.world-swap{transition:none}` +
     `@media (prefers-reduced-motion:reduce){html,.loader{transition:none}}`
   );
 }

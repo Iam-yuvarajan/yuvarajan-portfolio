@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { hero, profile, visibleLinks } from '@/data/content';
-import { worlds, type WorldId } from '@/data/worlds';
+import { entrySection, worlds, type WorldId } from '@/data/worlds';
 import { goTo, useActive } from '@/lib/world';
 import { Rich } from '@/lib/text';
 import { prefersReducedMotion } from '@/lib/client';
@@ -117,7 +117,7 @@ export default function AccessPass() {
 
   const links = visibleLinks();
   const { world } = useActive();
-  const jump = (id: WorldId) => goTo(worlds.find((w) => w.id === id)!.entry);
+  const jump = (id: WorldId) => goTo(entrySection(id));
 
   // Roving tabindex: Left/Right move focus between tabs, Enter/Space selects (native button).
   const onTabKey = (e: React.KeyboardEvent<HTMLButtonElement>) => {
@@ -158,7 +158,7 @@ export default function AccessPass() {
                     type="button"
                     role="tab"
                     aria-selected={world === w.id}
-                    aria-controls={w.entry}
+                    aria-controls={entrySection(w.id)}
                     tabIndex={world === w.id ? 0 : -1}
                     className={world === w.id ? 'is-active' : undefined}
                     onPointerDown={stop}

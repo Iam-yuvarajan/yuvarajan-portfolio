@@ -1,7 +1,16 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
-import { DEFAULT_WORLD, allSections, stepWorld, themeColors, worldById, worldOf, type WorldId } from '@/data/worlds';
+import {
+  DEFAULT_WORLD,
+  WORLD_ORDER,
+  entrySection,
+  stepWorld,
+  themeColors,
+  worldById,
+  worldOf,
+  type WorldId,
+} from '@/data/worlds';
 
 /**
  * The one place that changes the active world and section.
@@ -52,89 +61,80 @@ export function hydrateActive() {
 
 const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* ------------------------------------------------------------ curtain hookup */
+/* ------------------------------------------------------------ sweep hookup */
 
-/** Screen point the curtain grows from (viewport px). */
-export interface Origin {
-  x: number;
-  y: number;
+export type ShiftDirection = 'up' | 'down';
+
+export interface TransitionOpts {
+  world: WorldId;
+  direction: ShiftDirection;
+  /** Fired under the sweep: swap the palette and scroll to the target section. */
+  onCovered: () => void;
+  /** Fired when the lock can lift. */
+  onDone: () => void;
 }
 
-/** Implemented by <WorldCurtain/>: cover the screen in `world`'s colour, call `onCovered`, then reveal. */
-export type Curtain = (opts: { world: WorldId; origin: Origin; onCovered: () => void; onDone: () => void }) => void;
+/** Implemented by <WorldSweep/>: play the full-screen sweep and centre HUD. */
+export type WorldTransition = (opts: TransitionOpts) => void;
 
-let curtain: Curtain | null = null;
-/** True while a curtain transition runs. Extra clicks are ignored until it finishes. */
+let transition: WorldTransition | null = null;
+/** True while a world transition runs. Extra clicks are ignored until it finishes. */
 let busy = false;
 
-export function registerCurtain(c: Curtain | null) {
-  curtain = c;
+export function registerTransition(t: WorldTransition | null) {
+  transition = t;
 }
 export const isTransitioning = () => busy;
-
-/**
- * Where a click came from. Mouse and touch use the pointer; keyboard "clicks" (detail 0,
- * coordinates 0,0) use the centre of the element that was activated.
- */
-export function originFrom(e: { clientX: number; clientY: number; detail: number; currentTarget?: EventTarget | null }, el?: Element | null): Origin {
-  if (e.detail > 0 && (e.clientX || e.clientY)) return { x: e.clientX, y: e.clientY };
-  const target = el ?? (e.currentTarget instanceof Element ? e.currentTarget : null);
-  const r = target?.getBoundingClientRect();
-  return r ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : centre();
-}
-const centre = (): Origin => ({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
 
 /**
  * First section of a world that actually exists in the document. Config order wins
  * (`agents` → ask → notes), so a not-yet-built section is skipped, never crashed on.
  */
-export function entryFor(world: WorldId): string | null {
+export function entryFor(world: WorldId): string {
   const def = worldById(world);
-  return (
-    def.sections.find((id) => document.getElementById(id)) ??
-    allSections.find((s) => s.world === world)?.id ??
-    def.entry ??
-    null
-  );
+  return def.sections.find((id) => document.getElementById(id)) ?? entrySection(world);
 }
 
 /**
- * The world switcher: one step through the fixed order, with the curtain growing
- * from `origin`. Returns false when a transition is already running (click ignored).
+ * The world switcher: one step through the fixed order. Returns false when a
+ * transition is already running (click ignored).
  */
-export function cycleWorld(step: number, origin?: Origin): boolean {
+export function cycleWorld(step: number): boolean {
   if (busy) return false;
   const world = stepWorld(active.world, step);
-  const section = entryFor(world);
-  if (!section) return false;
-  goTo(section, { origin });
+  goTo(entryFor(world));
   return true;
 }
 
+/** Which way the sweep band travels between two worlds in the fixed order. */
+export function shiftDirection(from: WorldId, to: WorldId): ShiftDirection {
+  return WORLD_ORDER.indexOf(to) > WORLD_ORDER.indexOf(from) ? 'down' : 'up';
+}
+
 /**
- * Go to a section. If it lives in another world (and motion is allowed), the curtain covers the
- * screen first, the palette and scroll position change underneath, then it reveals the new world.
+ * Go to a section. If it lives in another world (and motion is allowed), the full-screen
+ * sweep plays: the palette and scroll position swap under it, then it clears.
  * Same world, or reduced motion: swap + scroll straight away.
  */
-export function goTo(section: string, opts: { push?: boolean; origin?: Origin } = {}) {
+export function goTo(section: string, opts: { push?: boolean } = {}) {
   if (busy) return;
   const el = document.getElementById(section);
   if (!el) return;
   const world = worldOf(section);
 
-  if (world !== active.world && curtain && !reduced()) {
+  if (world !== active.world && transition && !reduced()) {
     busy = true;
     try {
-      curtain({
+      transition({
         world,
-        origin: opts.origin ?? centre(),
+        direction: shiftDirection(active.world, world),
         onCovered: () => jump(section, el, opts.push, true),
         onDone: () => {
           busy = false;
         },
       });
     } catch {
-      // A broken curtain must never eat the click: fall back to an instant swap.
+      // A broken transition must never eat the click: fall back to an instant swap.
       busy = false;
       jump(section, el, opts.push, false);
     }
@@ -143,18 +143,27 @@ export function goTo(section: string, opts: { push?: boolean; origin?: Origin } 
   jump(section, el, opts.push, false);
 }
 
-/** Apply the section's world, scroll to it and update the hash. `instant`: under the curtain. */
-function jump(section: string, el: HTMLElement, push: boolean | undefined, instant: boolean) {
+/** Jump without the page's global `scroll-behavior: smooth` turning it into a glide. */
+function scrollToInstant(el: HTMLElement) {
   const html = document.documentElement;
-  if (instant) html.classList.add('world-swap'); // no 500ms crossfade, the curtain hides the swap
+  const previous = html.style.scrollBehavior;
+  html.style.scrollBehavior = 'auto';
+  el.scrollIntoView({ behavior: 'auto', block: 'start' });
+  html.style.scrollBehavior = previous;
+}
+
+/** Apply the section's world, scroll to it and update the hash. `instant`: under the sweep. */
+function jump(section: string, el: HTMLElement, push: boolean | undefined, instant: boolean) {
+  // A pending settle from an earlier smooth scroll must not fire and drag us back here.
+  settleCleanup?.();
   apply({ section, world: worldOf(section) });
   lockTarget = section;
   lockUntil = Date.now() + (instant ? 600 : 1500);
-  el.scrollIntoView({ behavior: instant || reduced() ? 'auto' : 'smooth', block: 'start' });
-  if (instant) {
-    // Re-enable crossfades once the new colours have been painted.
-    requestAnimationFrame(() => requestAnimationFrame(() => html.classList.remove('world-swap')));
+
+  if (instant || reduced()) {
+    scrollToInstant(el);
   } else {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     settleOn(el);
   }
   const hash = section === 'top' ? ' ' : `#${section}`;
@@ -178,7 +187,7 @@ function settleOn(el: HTMLElement) {
     const offset = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
     const top = el.getBoundingClientRect().top;
     const atBottom = Math.ceil(window.scrollY + window.innerHeight) >= document.documentElement.scrollHeight - 2;
-    if (Math.abs(top - offset) > 4 && !atBottom) el.scrollIntoView({ behavior: 'auto', block: 'start' });
+    if (Math.abs(top - offset) > 4 && !atBottom) scrollToInstant(el);
   };
   const timer = window.setTimeout(check, 2000);
   const cleanup = () => {

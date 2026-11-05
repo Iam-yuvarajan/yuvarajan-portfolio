@@ -1,0 +1,13 @@
+# Upload only what the site needs. Personal files in the repo root stay local.
+/*
+!/app
+!/components
+!/data
+!/lib
+!/public
+!/package.json
+!/package-lock.json
+!/next.config.ts
+!/tsconfig.json
+!/eslint.config.mjs
+!/vercel.json

@@ -26,3 +26,15 @@ Thumbs.db
 
 # TypeScript incremental build info
 *.tsbuildinfo
+
+# Next.js
+.next/
+next-env.d.ts
+
+# Notes wall storage (runtime data)
+.data/
+
+# Local scratch output
+dev-results.txt
+.vercel
+.env*

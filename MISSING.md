@@ -5,13 +5,8 @@ yellow, hatched, dashed-border marker so it can't ship unnoticed.
 
 ## Placeholders still on the page
 
-| Placeholder | Where |
-|---|---|
-| `{{YUVA_AI_TECH}}` | YUVA AI card, tech chips |
-| `{{YUVA_AI_OUTCOME}}` | YUVA AI card, outcome line |
-| `{{SOLLUNGA_OUTCOME}}` | Sollunga Bot card, outcome line |
-| `{{DISCOVERY_TECH}}` | Discovery Agent card, tech chips |
-| `{{DISCOVERY_OUTCOME}}` | Discovery Agent card, outcome line |
+None. The five project placeholders (YUVA AI tech + outcome, Sollunga Bot outcome, Discovery Agent
+tech + outcome) are filled.
 
 ## Missing, so the item is hidden
 

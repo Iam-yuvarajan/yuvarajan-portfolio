@@ -191,9 +191,9 @@ export const projects: Project[] = [
   {
     title: 'YUVA AI',
     desc: 'A password-protected AI companion that greets you and talks like a friend, a brother or another close relationship of your choice.',
-    tech: ['{{YUVA_AI_TECH}}'],
+    tech: ['JavaScript', 'Node.js', 'Express', 'Groq'],
     domain: 'Conversational AI',
-    outcome: '{{YUVA_AI_OUTCOME}}',
+    outcome: 'Live voice companion with 3 relationship modes and persistent memory',
     links: [{ kind: 'live', label: 'Live demo', href: 'https://yuva-ai.onrender.com/' }],
   },
   {
@@ -201,7 +201,7 @@ export const projects: Project[] = [
     desc: 'An AI agent that takes shop orders over Telegram or WhatsApp in Tanglish or English, and also from voice messages. The shopkeeper gets a message and approves or rejects each order.',
     tech: ['Python', 'Telegram', 'WhatsApp', 'voice input'],
     domain: 'Retail automation',
-    outcome: '{{SOLLUNGA_OUTCOME}}',
+    outcome: 'Multilingual text + voice orders with owner approval',
     links: [{ kind: 'source', label: 'Source on GitHub', href: 'https://github.com/Iam-yuvarajan/solluga-ai' }],
   },
   {
@@ -215,9 +215,9 @@ export const projects: Project[] = [
   {
     title: 'Discovery Agent',
     desc: 'An app that links the gaps between industries, such as stores and their stock, so supply and demand can find each other.',
-    tech: ['{{DISCOVERY_TECH}}'],
+    tech: ['Python', 'LLM'],
     domain: 'Supply & industry',
-    outcome: '{{DISCOVERY_OUTCOME}}',
+    outcome: 'Working prototype, walkthrough on request',
     links: [],
   },
 ];

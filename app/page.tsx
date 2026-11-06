@@ -6,7 +6,7 @@ import Work from '@/components/Work';
 import Journey from '@/components/Journey';
 import Stack from '@/components/Stack';
 import Shell from '@/components/Shell';
-import Notes from '@/components/Notes';
+import Ask from '@/components/Ask';
 import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
 import Motion from '@/components/Motion';
@@ -30,7 +30,7 @@ export default function Page() {
         <Journey initial={getExperience()} />
         <Stack initial={getSkills()} />
         <Shell />
-        <Notes />
+        <Ask />
         <Contact />
       </main>
       <Footer />

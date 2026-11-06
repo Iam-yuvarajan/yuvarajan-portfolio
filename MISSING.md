@@ -10,8 +10,6 @@ tech + outcome) are filled.
 
 ## Missing, so the item is hidden
 
-- **Upstash Redis on Vercel:** not connected yet, so the live notes wall shows "not connected yet". See README → "Adding Upstash on Vercel".
-
 - **LinkedIn URL:** `profile.links.linkedin` is empty. The LinkedIn button, palette action and shell line appear automatically once it's filled.
 - **Custom domain:** none yet. The canonical Vercel address is `https://jyuvarajan.vercel.app`; `site.url` and `metadataBase` are already set in `data/content.ts` and `app/layout.tsx`. Update both when a custom domain is ready.
 - **Internship / work experience:** none supplied, so no stage is rendered.
@@ -23,4 +21,4 @@ tech + outcome) are filled.
 
 ## Out of scope by design
 
-- A standalone "Ask / Interview me, async" section between Shell and Notes. A click-only bot now lives inside Notes (`components/AskBot.tsx`), with answers in `askBot` in `data/content.ts`.
+- A notes wall. Removed in November 2026: the sticky-note wall, `/api/notes`, `lib/notes.ts` and the Upstash/file storage are gone. Section 05 is now **Ask** (`components/Ask.tsx`): the click-only bot (`components/AskBot.tsx`, answers in `askBot` in `data/content.ts`) plus the GitHub contribution graph.

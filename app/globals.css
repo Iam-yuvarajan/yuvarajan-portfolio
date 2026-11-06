@@ -841,10 +841,70 @@ html.menu-open body {
   gap: 16px;
   margin: 0 0 16px;
 }
+.hero__id-text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
 .hero__role {
   font-size: 14px;
   color: var(--ink-muted);
   margin: 0;
+}
+
+/* say-name: speak the name out loud */
+.say-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  align-self: flex-start;
+  padding: 4px 11px 4px 8px;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--ink-muted);
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+.say-name:hover,
+.say-name:focus-visible {
+  color: var(--accent-text);
+  border-color: var(--accent);
+}
+.say-name.is-playing {
+  color: var(--accent-text);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+.say-name__icon {
+  display: inline-flex;
+}
+.say-name__wave {
+  opacity: 0.55;
+}
+.say-name.is-playing .say-name__wave {
+  opacity: 1;
+  animation: say-wave 1s ease-in-out infinite;
+}
+.say-name.is-playing .say-name__wave--2 {
+  animation-delay: 0.18s;
+}
+@keyframes say-wave {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .say-name.is-playing .say-name__wave {
+    animation: none;
+  }
 }
 
 /* portrait: colour ring lights on hover, focus or tap */
@@ -2072,146 +2132,6 @@ html.menu-open body {
   }
 }
 
-/* ----------------------------------------------------------------- notes */
-
-.composer {
-  position: relative;
-  max-width: 520px;
-  background: var(--note-2);
-  padding: 20px 22px;
-  border-radius: 4px;
-  box-shadow: 0 18px 30px -18px color-mix(in srgb, var(--shadow) 40%, transparent);
-  transform: rotate(-0.6deg);
-}
-.composer__head {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: var(--note-muted);
-  margin-bottom: 8px;
-}
-.composer__head .warn {
-  color: var(--err);
-}
-.composer textarea {
-  width: 100%;
-  border: 0;
-  background: transparent;
-  resize: vertical;
-  font-family: var(--font-display-stack);
-  font-size: 24px;
-  line-height: 1.3;
-  outline: none;
-  min-height: 120px;
-  background-image: repeating-linear-gradient(transparent 0 30px, color-mix(in srgb, var(--note-ink) 14%, transparent) 30px 31px);
-  background-attachment: local;
-}
-.composer textarea::placeholder {
-  color: var(--note-muted);
-}
-.composer:focus-within {
-  outline: 2px solid var(--accent);
-  outline-offset: 4px;
-}
-.composer__foot {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 10px;
-}
-.composer__name {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--note-muted);
-}
-.composer__name input {
-  border: 0;
-  border-bottom: 1px dashed var(--note-muted);
-  background: transparent;
-  width: 140px;
-  outline: none;
-  padding: 2px 0;
-}
-.hp {
-  position: absolute;
-  left: -9999px;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-}
-.form-err {
-  color: var(--err);
-  font-size: 12px;
-  margin: 8px 0 0;
-}
-.wall {
-  list-style: none;
-  padding: 0;
-  margin: 48px 0 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 28px 22px;
-}
-.wall__empty {
-  color: var(--ink-muted);
-  font-size: 13px;
-}
-.sticky {
-  position: relative;
-  background: var(--card);
-  padding: 26px 18px 14px;
-  border: 1px solid var(--line);
-  box-shadow: 0 14px 24px -16px color-mix(in srgb, var(--shadow) 35%, transparent);
-  transform: rotate(var(--rot, 0deg));
-  transition: transform 0.25s var(--ease);
-}
-.sticky:nth-child(3n + 1) {
-  background: var(--note-2);
-  border-color: transparent;
-}
-.sticky:nth-child(3n + 2) {
-  background: var(--note-1);
-  border-color: transparent;
-}
-.sticky:nth-child(3n) {
-  background: var(--note-3);
-  border-color: transparent;
-}
-.sticky:hover {
-  transform: rotate(0deg) translateY(-3px);
-}
-.sticky__pin {
-  position: absolute;
-  top: -7px;
-  left: 50%;
-  width: 16px;
-  height: 16px;
-  margin-left: -8px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, color-mix(in srgb, var(--accent) 55%, var(--bg)), var(--accent) 60%, color-mix(in srgb, var(--accent) 55%, var(--shadow)));
-  box-shadow: 0 3px 4px color-mix(in srgb, var(--shadow) 30%, transparent);
-}
-.sticky__text {
-  font-family: var(--font-display-stack);
-  font-size: 21px;
-  line-height: 1.3;
-  margin: 0 0 12px;
-  overflow-wrap: anywhere;
-}
-.sticky__meta {
-  margin: 0;
-  font-size: 11px;
-  color: var(--ink-muted);
-}
-.footnote {
-  margin: 40px 0 0;
-  font-size: 12px;
-  color: var(--ink-muted);
-}
 
 /* --------------------------------------------------------------- ask bot */
 

@@ -9,7 +9,7 @@ import SectionHead from './SectionHead';
 
 type Line = { kind: 'in' | 'out' | 'err' | 'ok' | 'dim' | 'link'; text: string; cwd?: string; href?: string };
 
-const ROUTES = ['/api/stats', '/api/projects', '/api/experience', '/api/skills', '/api/notes'];
+const ROUTES = ['/api/stats', '/api/projects', '/api/experience', '/api/skills'];
 const COMMANDS = ['help', 'ls', 'cd', 'cat', 'curl', 'git', 'whoami', 'clear', 'sudo'];
 const COMPLETIONS = [
   'help', 'ls', 'clear', 'whoami', 'git log', 'cat impact.json', 'cat links', 'cat resume', 'sudo hire yuvarajan',
@@ -21,7 +21,7 @@ const LS: Record<string, string[]> = {
   '~': worlds.map((w) => `${w.id}/`),
   '~/client': ['work/'],
   '~/server': ['experience/', 'stack/', 'shell/', 'impact.json', 'links', 'resume'],
-  '~/agents': ['notes/'],
+  '~/agents': ['ask/'],
   '~/whoami': ['contact/', 'links', 'resume'],
 };
 

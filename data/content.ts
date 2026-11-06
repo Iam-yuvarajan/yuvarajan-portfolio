@@ -79,6 +79,13 @@ export const profile = {
   firstName: 'Yuvarajan',
   lastName: 'J',
   initials: 'YJ',
+  /**
+   * Name pronunciation shown beside the hero name.
+   * `display` is the written hint; `speak` is what the browser voice reads out.
+   * Drop a recording at `public/name.mp3` to use your own voice instead — the
+   * button prefers the file and only falls back to the browser voice if it is missing.
+   */
+  pronunciation: { display: 'yu-va-raja-an', speak: 'yoo vah raa jan' },
   role: 'AI Engineer · ECE Student',
   shortRole: 'AI Engineer',
   availability: 'Open to AI roles · internships',
@@ -132,12 +139,6 @@ export const legal = {
       p: 'The contact form does not send or store anything. Pressing the button only opens your own mail app with the message pre-filled. Nothing is saved on this site.',
     },
     {
-      h: 'Notes wall',
-      p: 'Notes you post are public: anyone visiting the site can read them. They are stored on the server together with the name you typed (or "anonymous") and the time of posting. To have a note removed, email ' +
-        profile.email +
-        '.',
-    },
-    {
       h: 'Hosting logs',
       p: 'The site is hosted on Vercel. Like any web host, Vercel may keep short-lived technical logs (for example IP address, browser and requested page) to run and protect the service. I do not use these logs to track visitors.',
     },
@@ -158,10 +159,6 @@ export const legal = {
     {
       h: 'No warranty',
       p: 'Everything here is provided "as is", without any warranty. I am not liable for any loss arising from using the site.',
-    },
-    {
-      h: 'Notes wall',
-      p: 'Keep notes respectful. No spam, links, hate or personal attacks. I may edit or remove any note at any time, without notice.',
     },
   ],
 };
@@ -398,23 +395,20 @@ export const github = {
   totalSuffix: 'contributions in the last year',
 };
 
-/* ------------------------------------------------------------------ notes */
+/* -------------------------------------------------------------------- ask */
 
-export const notes = {
-  heading: 'Leave a *note*.',
-  sub: 'A hello, a hot take, a question. It goes on the wall for everyone to read.',
-  placeholder: 'Say hi, drop a hot take, ask a question…',
-  footnote: 'Public on this site. Removal: email me.',
-  maxLength: 280,
+export const ask = {
+  heading: 'Ask me *anything*.',
+  sub: 'Pre-written answers to the questions I get asked most, plus what I have been building lately.',
 };
 
 /* ---------------------------------------------------------------- ask bot */
 
-/** The click-only interview bot on the notes page. Answers are pre-written, never generated. */
+/** The click-only interview bot on the Ask page. Answers are pre-written, never generated. */
 export const askBot = {
   kicker: 'ask-yuva',
   status: 'preset answers · no live model',
-  sub: 'Pick a question. The bot answers from my notes — no typing needed.',
+  sub: 'Pick a question. The bot answers in my own words — no typing needed.',
   empty: 'Choose a question above to see the answer.',
   clear: 'clear answer',
   questions: [

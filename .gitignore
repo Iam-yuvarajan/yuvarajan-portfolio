@@ -31,8 +31,6 @@ Thumbs.db
 .next/
 next-env.d.ts
 
-# Notes wall storage (runtime data)
-.data/
 
 # Local scratch output
 dev-results.txt

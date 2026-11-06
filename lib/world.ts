@@ -87,8 +87,8 @@ export function registerTransition(t: WorldTransition | null) {
 export const isTransitioning = () => busy;
 
 /**
- * First section of a world that actually exists in the document. Config order wins
- * (`agents` → ask → notes), so a not-yet-built section is skipped, never crashed on.
+ * First section of a world that actually exists in the document. Config order wins,
+ * so a not-yet-built section is skipped, never crashed on.
  */
 export function entryFor(world: WorldId): string {
   const def = worldById(world);

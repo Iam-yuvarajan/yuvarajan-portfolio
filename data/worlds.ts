@@ -48,10 +48,9 @@ const seeds: WorldSeed[] = [
     id: 'agents',
     path: '~/agents',
     label: 'Agents',
-    // `ask` is listed first by design; it is simply skipped until that section exists.
-    sections: ['ask', 'notes'],
+    sections: ['ask'],
     palette: { name: 'deep indigo + amber', bg: '#13132E', ink: '#ECEBFA', accent: '#FFB547' },
-    bootLines: ['[agents] pinning notes to the wall', '[agents] palette: deep indigo + amber'],
+    bootLines: ['[agents] loading answers + contribution graph', '[agents] palette: deep indigo + amber'],
   },
   {
     id: 'whoami',
@@ -81,7 +80,7 @@ export const allSections = [
   { id: 'experience', nav: 'Journey', num: '02', world: 'server', path: '~/server/experience' },
   { id: 'stack', nav: 'Stack', num: '03', world: 'server', path: '~/server/stack' },
   { id: 'shell', nav: 'Shell', num: '04', world: 'server', path: '~/server/shell' },
-  { id: 'notes', nav: 'Notes', num: '05', world: 'agents', path: '~/agents/notes' },
+  { id: 'ask', nav: 'Ask', num: '05', world: 'agents', path: '~/agents/ask' },
   { id: 'contact', nav: 'Contact', num: '06', world: 'whoami', path: '~/whoami/contact' },
 ] as const satisfies readonly { id: string; nav: string; num: string; world: WorldId; path: string }[];
 
@@ -165,10 +164,6 @@ export function tokensFor(w: WorldDef): Tokens {
   const panel = dark ? mix(bg, BASE.black, 0.45) : ink;
   const panelInk = dark ? ink : bg;
 
-  const note1 = mix(bg, accent, dark ? 0.2 : 0.14);
-  const note2 = mix(bg, BASE.warn, dark ? 0.16 : 0.32);
-  const note3 = mix(bg, BASE.ok, dark ? 0.16 : 0.2);
-  const notes = [note1, note2, note3];
   const phBg = mix(bg, BASE.warn, dark ? 0.28 : 0.5);
 
   return {
@@ -196,11 +191,6 @@ export function tokensFor(w: WorldDef): Tokens {
     'panel-ok': ensure(BASE.ok, [panel], panelInk),
     'panel-err': ensure(BASE.err, [panel], panelInk),
     'panel-warn': ensure(BASE.warn, [panel], panelInk),
-    'note-1': note1,
-    'note-2': note2,
-    'note-3': note3,
-    'note-ink': ink,
-    'note-muted': muted(ink, bg, notes, 0.45),
     'ph-bg': phBg,
     'ph-ink': bestOn(phBg, [ink, bg]),
     'ph-line': mix(phBg, ink, 0.4),
@@ -224,8 +214,6 @@ export function contrastPairs(t: Tokens): [string, string, number][] {
     ['ok', 'bg'], ['ok', 'card'], ['err', 'bg'], ['err', 'card'],
     ['panel-ink', 'panel'], ['panel-muted', 'panel'], ['panel-muted', 'panel-elev'], ['panel-accent', 'panel'],
     ['panel-ok', 'panel'], ['panel-err', 'panel'], ['panel-warn', 'panel'],
-    ['note-ink', 'note-1'], ['note-ink', 'note-2'], ['note-ink', 'note-3'],
-    ['note-muted', 'note-1'], ['note-muted', 'note-2'], ['note-muted', 'note-3'],
     ['ph-ink', 'ph-bg'],
   ];
   return pairs.map(([fg, bg]) => [fg, bg, contrast(t[fg], t[bg])]);

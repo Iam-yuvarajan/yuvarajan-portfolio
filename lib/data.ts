@@ -44,7 +44,7 @@ export function getSkills() {
   return { total: skills.length, categories, tiers: stack.tiers, skills };
 }
 
-export function getStats(noteCount: number) {
+export function getStats() {
   return {
     name: profile.name,
     role: profile.role,
@@ -59,7 +59,6 @@ export function getStats(noteCount: number) {
       projects: projects.length,
       skills: skills.length,
       stages: stages.length,
-      notes: noteCount,
     },
     resume: profile.resume.href,
     cgpa: education.college.cgpa,

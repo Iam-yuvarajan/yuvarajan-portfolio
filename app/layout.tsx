@@ -69,7 +69,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         {/* World palettes, generated from data/worlds.ts. */}
         <style id="worlds" dangerouslySetInnerHTML={{ __html: worldsCss() }} />
-        {/* Pick the world from the URL hash before first paint. */}
+        {/* Start every fresh visit on the hero before first paint. */}
         <script dangerouslySetInnerHTML={{ __html: initialWorldScript }} />
         {/* Hide content under paper until the boot loader mounts (first visit per session only). */}
         <script

@@ -23,6 +23,13 @@ function sectionAtCenter(): string {
  */
 export default function WorldSpy() {
   useEffect(() => {
+    // A fresh link always opens on the hero. In-page navigation writes hashes later.
+    history.scrollRestoration = 'manual';
+    if (window.location.hash) {
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+
     hydrateActive();
 
     // Coalesce to one update per frame: when scrolling fast, only the last section applies.
@@ -67,7 +74,7 @@ export default function WorldSpy() {
       teardown = () => io.disconnect();
     }
 
-    // First load (including reload mid-page and hash links).
+    // First load: the hero is the only valid landing point (the hash was cleared above).
     schedule(sectionAtCenter());
 
     // In-page anchors (#work, #contact …) switch world first, then scroll.
@@ -81,8 +88,20 @@ export default function WorldSpy() {
       // Every in-page link goes through the same sweep + HUD as the world pill.
       goTo(id);
     };
-    // Back / forward: the browser restores scroll; settle on whatever is in the middle afterwards.
-    const onPop = () => window.setTimeout(() => schedule(sectionAtCenter()), 60);
+    // Back / forward: scroll restoration is manual now, so settle on the hash target
+    // (or the hero when there is no hash) instead of whatever was left on screen.
+    const onPop = () =>
+      window.setTimeout(() => {
+        const id = window.location.hash.slice(1);
+        const el = id ? document.getElementById(id) : null;
+        if (el && allSections.some((s) => s.id === id)) {
+          el.scrollIntoView({ behavior: 'auto', block: 'start' });
+          schedule(id);
+          return;
+        }
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+        schedule(allSections[0].id);
+      }, 60);
 
     document.addEventListener('click', onClick);
     window.addEventListener('popstate', onPop);

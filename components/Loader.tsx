@@ -8,6 +8,19 @@ import { prefersReducedMotion } from '@/lib/client';
 const KEY = 'yj:booted';
 const DURATION = 2600; // never blocks for more than ~3s
 const FADE = 450;
+const GLYPHS = '!<>-_/[]{}—=+*^?#$%&@01';
+const TICK_MS = 70;
+
+/** Replace the tail of a word with changing symbols until `reveal` characters are clear. */
+function scramble(word: string, tick: number, reveal = 0) {
+  return word
+    .split('')
+    .map((char, index) => {
+      if (char === ' ' || index < reveal) return char;
+      return GLYPHS[(tick * 11 + index * 17 + tick * index) % GLYPHS.length];
+    })
+    .join('');
+}
 
 /**
  * Boot loader. The progress counter drives everything: 0–25% client, 25–50% server,
@@ -19,6 +32,7 @@ export default function Loader() {
   const [show, setShow] = useState(false);
   const [pct, setPct] = useState(0);
   const [leaving, setLeaving] = useState(false);
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
     let seen = false;
@@ -70,12 +84,26 @@ export default function Loader() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!show || leaving) return;
+    const timer = window.setInterval(() => setTick((value) => value + 1), TICK_MS);
+    return () => window.clearInterval(timer);
+  }, [show, leaving]);
+
   if (!show) return null;
 
   const slice = 100 / worlds.length;
   const phase = Math.max(0, Math.min(worlds.length - 1, Math.floor(pct / slice)));
   const world = worlds[phase];
   const within = (pct - phase * slice) / slice;
+  const label = world.label.toUpperCase();
+  const reveal = pct === 100 ? label.length : Math.floor(Math.min(1, within * 1.65) * label.length);
+  const bigWord = scramble(label, tick, reveal);
+  const worldLabels = worlds.map((w, index) => {
+    const text = w.label.toUpperCase();
+    if (pct === 100 || index < phase) return text;
+    return scramble(text, tick, index === phase ? reveal : 0);
+  });
   const lines = worlds
     .slice(0, phase + 1)
     .flatMap((w, i) => (i < phase || pct === 100 ? w.bootLines : w.bootLines.slice(0, within >= 0.5 ? 2 : 1)));
@@ -92,6 +120,22 @@ export default function Loader() {
         <div className="loader__top mono">
           <span>{profile.host} · cold start</span>
           <span className="loader__pct">{String(pct).padStart(3, '0')}%</span>
+        </div>
+        <div className="loader__word-wrap" aria-hidden="true">
+          <p className="loader__word-kicker mono">
+            {world.path} · {pct === 100 ? 'ready' : 'decoding'}
+          </p>
+          <p className="loader__word">{bigWord}</p>
+          <p className="loader__worlds mono">
+            {worlds.map((w, index) => (
+              <span
+                key={w.id}
+                className={index === phase ? 'is-active' : index < phase ? 'is-done' : undefined}
+              >
+                {worldLabels[index]}
+              </span>
+            ))}
+          </p>
         </div>
         <div className="loader__bar" aria-hidden="true">
           <span style={{ transform: `scaleX(${pct / 100})` }} />

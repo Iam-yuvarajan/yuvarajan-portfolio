@@ -31,7 +31,8 @@ const seeds: WorldSeed[] = [
     id: 'client',
     path: '~/client',
     label: 'Client',
-    sections: ['work'],
+    // `top` is the hero/name page, so the client world always enters there.
+    sections: ['top', 'work'],
     palette: { name: 'paper + marker violet', bg: '#F5F0EB', ink: '#16130F', accent: '#5B34D9' },
     bootLines: ['[client] compiling client.tsx', '[client] palette: paper + marker violet'],
   },
@@ -263,9 +264,12 @@ export function worldsCss(): string {
 /** Theme-color meta value per world. */
 export const themeColors = Object.fromEntries(worlds.map((w) => [w.id, w.palette.bg])) as Record<WorldId, string>;
 
-/** Inline, pre-paint: set the world from the URL hash so the first frame has the right palette. */
-export const initialWorldScript = `try{var m=${JSON.stringify(
-  Object.fromEntries(allSections.map((s) => [s.id, s.world])),
-)};var w=m[location.hash.slice(1)]||'${DEFAULT_WORLD}';document.documentElement.dataset.world=w;var mt=document.querySelector('meta[name="theme-color"]');if(mt)mt.setAttribute('content',${JSON.stringify(
+/**
+ * Inline, pre-paint: every fresh visit starts on the hero in the default world.
+ * In-page navigation still writes section hashes, but opening or reloading a URL
+ * with a hash should not bypass the name page. Disabling scroll restoration here
+ * also stops the browser from reopening the previous scroll position.
+ */
+export const initialWorldScript = `try{var w='${DEFAULT_WORLD}';document.documentElement.dataset.world=w;if('scrollRestoration'in history)history.scrollRestoration='manual';if(location.hash)history.replaceState(null,'',location.pathname+location.search);var mt=document.querySelector('meta[name="theme-color"]');if(mt)mt.setAttribute('content',${JSON.stringify(
   themeColors,
 )}[w])}catch(e){}`;

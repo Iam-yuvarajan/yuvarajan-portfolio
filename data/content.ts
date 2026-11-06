@@ -182,7 +182,7 @@ export const hero = {
     { value: '1', label: 'hackathon · SIH 2026' },
   ],
   passCaption: 'grab me, it swings ↘',
-  passFlipHint: '↻ flip the pass',
+  passFlipHint: 'flip the pass',
   passBackHint: 'tap the card to flip back',
   marqueeLead: 'Built with',
   marquee: ['Python', 'Java', 'HTML', 'AI', 'Web apps', 'Vibe coding'],

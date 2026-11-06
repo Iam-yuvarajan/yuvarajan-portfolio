@@ -14,7 +14,12 @@ interface SourcePayload {
 }
 
 const SOURCE = `https://github-contributions-api.jogruber.de/v4/${encodeURIComponent(github.username)}?y=last`;
-const REVALIDATE_SECONDS = 60 * 60 * 6;
+/**
+ * The graph polls this route every minute, so the upstream copy is kept short-lived:
+ * a new commit shows up within a couple of minutes, while the source is still only
+ * asked once per window no matter how many visitors are watching.
+ */
+const REVALIDATE_SECONDS = 120;
 
 const clampLevel = (value: number): Level => Math.max(0, Math.min(4, Math.round(value))) as Level;
 
@@ -42,8 +47,8 @@ export async function GET() {
         : contributions.reduce((sum, day) => sum + day.count, 0);
 
     return Response.json(
-      { username: github.username, total, contributions },
-      { headers: { 'Cache-Control': 'public, s-maxage=21600, stale-while-revalidate=86400' } },
+      { username: github.username, total, contributions, updatedAt: new Date().toISOString() },
+      { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=600' } },
     );
   } catch {
     return Response.json(

@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { github as copy, profile } from '@/data/content';
+import { prefersReducedMotion } from '@/lib/client';
 
 type Level = 0 | 1 | 2 | 3 | 4;
 
@@ -25,6 +26,12 @@ const GAP = 3;
 const STEP = CELL + GAP;
 const LEFT = 28;
 const TOP = 18;
+
+/** How often the graph re-checks GitHub while the tab is visible. */
+const POLL_MS = 60_000;
+/** How long a day that just gained contributions stays highlighted. */
+const BUMP_MS = 2600;
+const COUNT_UP_MS = 900;
 
 const utc = (date: string) => new Date(`${date}T00:00:00Z`);
 
@@ -71,30 +78,132 @@ function monthLabels(weeks: (ContributionDay | null)[][]) {
   return labels;
 }
 
+/** "just now", "3 min ago", "2 h ago" — how fresh the numbers on screen are. */
+function freshness(at: number, now: number) {
+  const mins = Math.floor((now - at) / 60_000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins} min ago`;
+  return `${Math.floor(mins / 60)} h ago`;
+}
+
 export default function GitHubContributions() {
   const [state, setState] = useState<State>({ status: 'loading' });
+  /** Days that gained contributions since the last poll, highlighted for a moment. */
+  const [bumped, setBumped] = useState<string[]>([]);
+  /** The number on screen, which counts up to the real total. */
+  const [shown, setShown] = useState(0);
+  const [checkedAt, setCheckedAt] = useState<number | null>(null);
+  const [now, setNow] = useState(() => Date.now());
+  const [entering, setEntering] = useState(true);
 
+  const counts = useRef<Map<string, number> | null>(null);
+  const shownRef = useRef(0);
+
+  // Poll while the tab is visible, and re-check the moment it is focused again.
   useEffect(() => {
-    const controller = new AbortController();
     let live = true;
+    let timer: ReturnType<typeof setInterval> | null = null;
+    let bumpTimer: ReturnType<typeof setTimeout> | null = null;
+    const controllers = new Set<AbortController>();
 
-    fetch('/api/github-contributions', { signal: controller.signal })
-      .then(async (res) => {
+    const load = async () => {
+      const controller = new AbortController();
+      controllers.add(controller);
+      try {
+        const res = await fetch('/api/github-contributions', { signal: controller.signal, cache: 'no-store' });
         if (!res.ok) throw new Error('GitHub contributions are unavailable.');
         const data = (await res.json()) as Payload;
         if (!Array.isArray(data.contributions) || data.contributions.length === 0) {
           throw new Error('GitHub contributions are empty.');
         }
-        if (live) setState({ status: 'ready', data });
-      })
-      .catch((error: Error) => {
-        if (live && error.name !== 'AbortError') setState({ status: 'error' });
-      });
+        if (!live) return;
+
+        // Which days went up since the previous poll? Those cells flash.
+        const previous = counts.current;
+        const next = new Map(data.contributions.map((d) => [d.date, d.count]));
+        if (previous) {
+          const risen = data.contributions.filter((d) => d.count > (previous.get(d.date) ?? 0)).map((d) => d.date);
+          if (risen.length) {
+            setBumped(risen);
+            if (bumpTimer) clearTimeout(bumpTimer);
+            bumpTimer = setTimeout(() => live && setBumped([]), BUMP_MS);
+          }
+        }
+        counts.current = next;
+
+        setState({ status: 'ready', data });
+        setCheckedAt(Date.now());
+        setNow(Date.now());
+      } catch (error) {
+        if (live && (error as Error).name !== 'AbortError') {
+          // A failed re-check keeps the graph that is already on screen.
+          setState((s) => (s.status === 'ready' ? s : { status: 'error' }));
+        }
+      } finally {
+        controllers.delete(controller);
+      }
+    };
+
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') load();
+    };
+
+    load();
+    timer = setInterval(() => {
+      if (document.visibilityState === 'visible') load();
+    }, POLL_MS);
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('focus', onVisible);
 
     return () => {
       live = false;
-      controller.abort();
+      if (timer) clearInterval(timer);
+      if (bumpTimer) clearTimeout(bumpTimer);
+      controllers.forEach((c) => c.abort());
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('focus', onVisible);
     };
+  }, []);
+
+  const total = state.status === 'ready' ? state.data.total : 0;
+
+  // Count the headline number up to its new value instead of snapping to it.
+  useEffect(() => {
+    if (!total) return;
+    if (prefersReducedMotion()) {
+      const jump = requestAnimationFrame(() => {
+        shownRef.current = total;
+        setShown(total);
+      });
+      return () => cancelAnimationFrame(jump);
+    }
+    let raf = 0;
+    let startedAt = 0;
+    const from = shownRef.current;
+    const tick = (t: number) => {
+      if (!startedAt) startedAt = t;
+      const p = Math.min(1, (t - startedAt) / COUNT_UP_MS);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const value = Math.round(from + (total - from) * eased);
+      shownRef.current = value;
+      setShown(value);
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [total]);
+
+  // The entry wave runs once, then cells are left alone so re-polls do not re-animate.
+  useEffect(() => {
+    if (state.status !== 'ready' || !entering) return;
+    const t = setTimeout(() => setEntering(false), 2400);
+    return () => clearTimeout(t);
+  }, [state.status, entering]);
+
+  // Keep the "updated …" label honest between polls.
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 30_000);
+    return () => clearInterval(t);
   }, []);
 
   const weeks = state.status === 'ready' ? buildWeeks(state.data.contributions) : [];
@@ -102,6 +211,8 @@ export default function GitHubContributions() {
   const width = LEFT + weeks.length * STEP;
   const height = TOP + 7 * STEP;
   const profileHref = profile.links.github || `https://github.com/${copy.username}`;
+  const lastDate = state.status === 'ready' ? state.data.contributions.at(-1)?.date : undefined;
+  const bumpedSet = new Set(bumped);
 
   return (
     <section className="gh" aria-labelledby="github-contributions-title" data-reveal>
@@ -139,7 +250,14 @@ export default function GitHubContributions() {
       {state.status === 'ready' && (
         <>
           <p className="gh__total mono">
-            <strong>{state.data.total}</strong> {copy.totalSuffix}
+            <strong aria-live="polite">{shown.toLocaleString('en-US')}</strong>
+            <span>{copy.totalSuffix}</span>
+            {checkedAt && (
+              <span className={`gh__live${bumped.length ? ' is-new' : ''}`}>
+                <span className="gh__live-dot" aria-hidden="true" />
+                {copy.live} · {freshness(checkedAt, now)}
+              </span>
+            )}
           </p>
 
           <div className="gh__body">
@@ -150,7 +268,7 @@ export default function GitHubContributions() {
               aria-label={`GitHub contributions for @${copy.username}, last year`}
             >
               <svg
-                className="gh__chart"
+                className={`gh__chart${entering ? ' is-entering' : ''}`}
                 width={width}
                 height={height}
                 viewBox={`0 0 ${width} ${height}`}
@@ -178,7 +296,15 @@ export default function GitHubContributions() {
                       day ? (
                         <rect
                           key={day.date}
-                          className={`gh__cell gh__cell--${day.level}`}
+                          className={[
+                            'gh__cell',
+                            `gh__cell--${day.level}`,
+                            day.date === lastDate ? 'is-today' : '',
+                            bumpedSet.has(day.date) ? 'is-bumped' : '',
+                          ]
+                            .filter(Boolean)
+                            .join(' ')}
+                          style={{ '--col': weekIndex, '--row': dayIndex } as React.CSSProperties}
                           x={LEFT + weekIndex * STEP}
                           y={TOP + dayIndex * STEP}
                           width={CELL}

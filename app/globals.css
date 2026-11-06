@@ -835,10 +835,89 @@ html.menu-open body {
 .hero__name span {
   display: block;
 }
+.hero__id {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 16px;
+}
 .hero__role {
   font-size: 14px;
   color: var(--ink-muted);
-  margin: 0 0 16px;
+  margin: 0;
+}
+
+/* portrait: colour ring lights on hover, focus or tap */
+@property --portrait-spin {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes portrait-spin {
+  to {
+    --portrait-spin: 360deg;
+  }
+}
+.portrait {
+  position: relative;
+  flex: none;
+  width: 76px;
+  height: 76px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.portrait__ring {
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  padding: 3px;
+  background: conic-gradient(
+    from var(--portrait-spin),
+    #ff5f6d,
+    #ffc371,
+    #47e5bc,
+    #4d9fff,
+    #b06cff,
+    #ff5f6d
+  );
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+  opacity: 0.4;
+  transform: scale(0.94);
+  transition: opacity 0.35s ease, transform 0.35s ease, filter 0.35s ease;
+}
+.portrait.is-lit .portrait__ring,
+.portrait:focus-visible .portrait__ring {
+  opacity: 1;
+  transform: scale(1);
+  filter: saturate(1.25) drop-shadow(0 0 14px color-mix(in srgb, #4d9fff 45%, transparent));
+  animation: portrait-spin 3.4s linear infinite;
+}
+.portrait__img {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  border: 1px solid var(--line);
+  transition: transform 0.35s ease;
+}
+.portrait.is-lit .portrait__img {
+  transform: scale(1.04);
+}
+@media (prefers-reduced-motion: reduce) {
+  .portrait.is-lit .portrait__ring,
+  .portrait:focus-visible .portrait__ring {
+    animation: none;
+  }
+  .portrait.is-lit .portrait__img {
+    transform: none;
+  }
 }
 .hero__intro {
   font-size: clamp(18px, 2vw, 22px);

@@ -2,6 +2,7 @@ import { hero, profile } from '@/data/content';
 import { Rich, isPlaceholder } from '@/lib/text';
 import AccessPass from './AccessPass';
 import Clock from './Clock';
+import Portrait from './Portrait';
 
 export default function Hero() {
   return (
@@ -26,9 +27,10 @@ export default function Hero() {
             </span>
           </h1>
 
-          <p className="hero__role mono" data-reveal>
-            {profile.role}
-          </p>
+          <div className="hero__id" data-reveal>
+            <Portrait />
+            <p className="hero__role mono">{profile.role}</p>
+          </div>
           <p className="hero__intro" data-reveal>
             <Rich text={hero.intro} />
           </p>

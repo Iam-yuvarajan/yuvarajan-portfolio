@@ -168,46 +168,95 @@ html.has-motion [data-reveal] {
 
 /* --------------------------------------------------------------- buttons */
 
+/* Rising fill: a solid colour climbs from the bottom edge to the top border
+   on hover. `--rise` is the colour that rises, `--rise-ink` the text on top
+   of it. Change both to re-theme any control without touching its markup. */
 .btn {
+  --rise: var(--accent);
+  --rise-ink: var(--accent-ink);
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 20px;
+  justify-content: center;
+  gap: 10px;
+  height: 48px;
+  padding: 0 22px;
   border-radius: 999px;
   border: 1px solid var(--ink);
-  background: transparent;
+  background-color: var(--ink);
+  color: var(--bg);
   text-decoration: none;
   font-weight: 500;
   font-size: 15px;
   line-height: 1.2;
-  transition: background 0.2s, color 0.2s, transform 0.2s var(--ease), border-color 0.2s;
   white-space: nowrap;
+  box-shadow: 0 4px 0 0 color-mix(in srgb, var(--accent) 55%, #1a1a1a);
+  background-image: linear-gradient(var(--rise), var(--rise));
+  background-repeat: no-repeat;
+  background-position: 50% 100%;
+  background-size: 100% 0%;
+  transition:
+    background-size 0.38s var(--ease),
+    color 0.22s ease,
+    border-color 0.22s ease,
+    box-shadow 0.22s ease,
+    transform 0.22s var(--ease);
 }
-.btn:hover {
-  transform: translateY(-1px);
+.btn:hover:not(:disabled),
+.btn:focus-visible {
+  background-size: 100% 101%;
+  border-color: var(--rise);
+  color: var(--rise-ink);
+  transform: translateY(1px);
+  box-shadow: 0 3px 0 0 color-mix(in srgb, var(--accent) 55%, #1a1a1a);
+}
+.btn:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 0 transparent;
 }
 .btn--primary {
-  background: var(--accent);
+  --rise: var(--ink);
+  --rise-ink: var(--bg);
+  background-color: var(--accent);
   border-color: var(--accent);
   color: var(--accent-ink);
+  box-shadow: 0 4px 0 0 color-mix(in srgb, var(--ink) 30%, transparent);
 }
-.btn--primary:hover {
-  background: var(--ink);
+.btn--primary:hover:not(:disabled),
+.btn--primary:focus-visible {
   border-color: var(--ink);
-  color: var(--bg);
+  box-shadow: 0 3px 0 0 color-mix(in srgb, var(--ink) 30%, transparent);
 }
-.btn--primary:disabled {
-  opacity: 0.6;
-  cursor: progress;
+.btn--primary:active:not(:disabled) {
+  box-shadow: 0 0 0 0 transparent;
 }
-.btn--ghost:hover {
-  background: var(--ink);
-  color: var(--bg);
+.btn--ghost {
+  --rise: var(--ink);
+  --rise-ink: var(--bg);
+  background-color: transparent;
+  border-color: var(--line-strong);
+  color: var(--ink);
+  box-shadow: 0 4px 0 0 var(--line-strong);
+}
+.btn--ghost:hover:not(:disabled),
+.btn--ghost:focus-visible {
+  border-color: var(--ink);
+  box-shadow: 0 3px 0 0 var(--line-strong);
+}
+.btn--ghost:active:not(:disabled) {
+  box-shadow: 0 0 0 0 transparent;
+}
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
 }
 .btn--sm {
-  padding: 8px 14px;
+  height: 38px;
+  padding: 0 16px;
   font-size: 14px;
 }
+
 
 .link-underline {
   text-decoration: underline;
@@ -261,10 +310,12 @@ html.has-motion [data-reveal] {
   cursor: pointer;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
-.chip--btn:hover,
+.chip--btn:hover {
+  border-color: var(--accent);
+}
 .chip--btn.is-active {
   border-color: var(--accent);
-  background: var(--accent);
+  background-color: var(--accent);
   color: var(--accent-ink);
 }
 .chips--lg .chip {
@@ -645,11 +696,11 @@ kbd {
 }
 .pages__item:hover,
 .pages__item:focus-visible {
-  background: var(--bg-elev);
+  background-color: transparent;
   outline-offset: -2px;
 }
 .pages__item.is-active {
-  background: var(--accent);
+  background-color: var(--accent);
   color: var(--accent-ink);
 }
 .pages__num,
@@ -1283,9 +1334,11 @@ html.menu-open body {
   cursor: pointer;
   border-radius: 4px;
 }
-.pass__clear li button:hover,
+.pass__clear li button:hover {
+  background-color: transparent;
+}
 .pass__clear li button.is-active {
-  background: var(--bg-elev);
+  background-color: var(--bg-elev);
 }
 .pass__back .pass__flip {
   margin-top: auto;
@@ -3104,4 +3157,109 @@ html.world-shift[data-shift-dir='up'] .shift-sweep i {
   .shift-hud {
     display: none;
   }
+}
+
+/* The same rising fill, shared by every smaller control on the page. */
+.pill-btn,
+.chip--btn,
+.askbot__q,
+.askbot__clear,
+.menu-btn,
+.world-btn,
+.kbd-hint,
+.pages__item,
+.pass__tabs button,
+.pass__clear li button,
+.pass__flip,
+.say-name {
+  --rise: var(--ink);
+  --rise-ink: var(--bg);
+  background-image: linear-gradient(var(--rise), var(--rise));
+  background-repeat: no-repeat;
+  background-position: 50% 100%;
+  background-size: 100% 0%;
+  transition:
+    background-size 0.38s var(--ease),
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s var(--ease);
+}
+.pill-btn:hover:not(.is-active),
+.pill-btn:focus-visible:not(.is-active),
+.chip--btn:hover:not(.is-active),
+.chip--btn:focus-visible:not(.is-active),
+.askbot__q:hover:not([aria-pressed='true']),
+.askbot__q:focus-visible:not([aria-pressed='true']),
+.askbot__clear:hover,
+.askbot__clear:focus-visible,
+.menu-btn:hover,
+.menu-btn:focus-visible,
+.world-btn:hover,
+.world-btn:focus-visible,
+.kbd-hint:hover,
+.kbd-hint:focus-visible,
+.pages__item:hover:not(.is-active),
+.pages__item:focus-visible:not(.is-active),
+.pass__tabs button:hover:not(.is-active),
+.pass__tabs button:focus-visible:not(.is-active),
+.pass__clear li button:hover:not(.is-active),
+.pass__clear li button:focus-visible:not(.is-active),
+.pass__flip:hover,
+.pass__flip:focus-visible,
+.say-name:hover,
+.say-name:focus-visible {
+  background-size: 100% 101%;
+  color: var(--rise-ink);
+}
+.pill-btn {
+  --rise: var(--ink);
+  --rise-ink: var(--bg);
+}
+.pill-btn:hover:not(.is-active) {
+  border-color: var(--ink);
+}
+.chip--btn {
+  --rise: var(--accent);
+  --rise-ink: var(--accent-ink);
+}
+.chip--btn:hover:not(.is-active) {
+  border-color: var(--accent);
+}
+.askbot__q {
+  --rise: var(--accent);
+  --rise-ink: var(--accent-ink);
+}
+.askbot__q:hover::before {
+  color: var(--accent-ink);
+}
+.pages__item {
+  --rise: var(--accent);
+  --rise-ink: var(--accent-ink);
+}
+.pages__item:hover .pages__num,
+.pages__item:hover .pages__world {
+  color: inherit;
+}
+.kbd-hint {
+  --rise: var(--bg-elev);
+  --rise-ink: var(--ink);
+  border-radius: 999px;
+}
+.pass__tabs button,
+.pass__clear li button,
+.pass__flip,
+.say-name {
+  --rise: var(--accent-soft);
+  --rise-ink: var(--ink);
+}
+.pass__flip {
+  --rise-ink: var(--accent-text);
+}
+.pill-btn.is-active,
+.chip--btn.is-active,
+.askbot__q[aria-pressed='true'],
+.pages__item.is-active {
+  background-image: none;
 }

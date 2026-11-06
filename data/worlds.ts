@@ -33,7 +33,7 @@ const seeds: WorldSeed[] = [
     label: 'Client',
     // `top` is the hero/name page, so the client world always enters there.
     sections: ['top', 'work'],
-    palette: { name: 'paper + marker violet', bg: '#F5F0EB', ink: '#16130F', accent: '#5B34D9' },
+    palette: { name: 'paper + marker violet', bg: '#F5F0EB', ink: '#1A1A1A', accent: '#6C47FF' },
     bootLines: ['[client] compiling client.tsx', '[client] palette: paper + marker violet'],
   },
   {
@@ -41,7 +41,7 @@ const seeds: WorldSeed[] = [
     path: '~/server',
     label: 'Server',
     sections: ['experience', 'stack', 'shell'],
-    palette: { name: 'terminal + phosphor green', bg: '#0A100C', ink: '#DDEFE2', accent: '#3DF58A' },
+    palette: { name: 'terminal + phosphor green', bg: '#0D1117', ink: '#E6EDF3', accent: '#00FF94' },
     bootLines: ['[server] mounting /api/projects /api/stats /api/experience', '[server] palette: terminal + phosphor green'],
   },
   {
@@ -49,16 +49,16 @@ const seeds: WorldSeed[] = [
     path: '~/agents',
     label: 'Agents',
     sections: ['ask'],
-    palette: { name: 'deep indigo + amber', bg: '#13132E', ink: '#ECEBFA', accent: '#FFB547' },
-    bootLines: ['[agents] loading answers + contribution graph', '[agents] palette: deep indigo + amber'],
+    palette: { name: 'deep amber + ink', bg: '#0D0B08', ink: '#F0E8D8', accent: '#E8A020' },
+    bootLines: ['[agents] loading answers + contribution graph', '[agents] palette: deep amber + ink'],
   },
   {
     id: 'whoami',
     path: '~/whoami',
     label: 'Whoami',
     sections: ['contact'],
-    palette: { name: 'cream + coral', bg: '#FFF4E8', ink: '#1E1411', accent: '#F4583F' },
-    bootLines: ['[whoami] resolving contact ... ok', '[whoami] palette: cream + coral'],
+    palette: { name: 'night blue + cyan', bg: '#0A0F1E', ink: '#F1F5F9', accent: '#38BDF8' },
+    bootLines: ['[whoami] resolving contact ... ok', '[whoami] palette: night blue + cyan'],
   },
 ];
 

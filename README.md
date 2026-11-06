@@ -12,7 +12,7 @@ PORT=4000 ./run.sh  # any mode on another port
 
 The script installs dependencies on first run.
 
-**Live:** https://jyuvarajan26.vercel.app (Vercel project `yuvarajan-four-worlds`; also at yuvarajan-four-worlds.vercel.app). The canonical address is `site.url` in `data/content.ts`.
+**Live:** https://jyuvarajan.vercel.app (Vercel project `jyuvarajan`). The canonical address is `site.url` in `data/content.ts`.
 `.vercelignore` uploads only the site's source; personal files in the repo root (photos, other PDFs) stay local.
 
 - **Content:** every bit of personal text is in `data/content.ts`. Values that are still missing are listed in `MISSING.md`.

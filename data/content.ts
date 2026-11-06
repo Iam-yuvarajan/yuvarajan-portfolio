@@ -86,8 +86,8 @@ export const profile = {
   tzName: 'Asia/Kolkata',
   email: 'yuvarajan278@gmail.com',
   baseLocation: 'Hosur, Tamil Nadu', // from Yuvarajan_Resume.pdf
-  /** Display hostname for the loader and shell. No real domain yet, never used in URLs. */
-  host: 'yuvarajan',
+  /** Display hostname for the loader and shell. Never used in URLs. */
+  host: 'jyuvarajan',
   replyTime: 'Within 24 hours',
   resume: { href: '/Yuvarajan-J-Resume.pdf', file: 'Yuvarajan-J-Resume.pdf' },
   serial: 'YJ-2026-0001',
@@ -103,11 +103,13 @@ export const profile = {
 
 export const site = {
   /** Canonical public address, used for search engines (canonical URL, sitemap, Open Graph). */
-  url: 'https://jyuvarajan26.vercel.app',
-  title: 'Yuvarajan J',
+  url: 'https://jyuvarajan.vercel.app',
+  /** Google/search title. Also the source of the Person entity name. */
+  title: 'J Yuvarajan | AI Engineer',
+  personName: 'J Yuvarajan',
   description:
-    'Yuvarajan J: AI engineer and ECE student from Hosur, Tamil Nadu. Builds AI tools and web apps with Python, JavaScript and LLMs. SIH 2026 top 40 finalist. Open to AI engineer roles and internships.',
-  keywords: ['Yuvarajan J', 'Yuvarajan', 'AI engineer', 'AI developer', 'web application developer', 'ECE', 'Python', 'Hosur', 'Bengaluru', 'portfolio'],
+    'J Yuvarajan: AI engineer and ECE student from Hosur, Tamil Nadu. Builds AI tools and web apps with Python, JavaScript and LLMs. SIH 2026 top 40 finalist. Open to AI engineer roles and internships.',
+  keywords: ['J Yuvarajan', 'Yuvarajan J', 'Yuvarajan', 'AI engineer', 'AI developer', 'web application developer', 'ECE', 'Python', 'Hosur', 'Bengaluru', 'portfolio'],
   copyright: '© 2026 Yuvarajan J',
   builtWith: 'Designed & built by hand. Next.js, GSAP, plain CSS.',
 };

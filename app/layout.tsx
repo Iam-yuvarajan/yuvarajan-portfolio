@@ -14,8 +14,8 @@ export const metadata: Metadata = {
   title: { default: site.title, template: `%s · ${site.title}` },
   description: site.description,
   applicationName: site.title,
-  authors: [{ name: profile.name, url: site.url }],
-  creator: profile.name,
+  authors: [{ name: site.personName, url: site.url }],
+  creator: site.personName,
   keywords: site.keywords,
   alternates: { canonical: '/' },
   openGraph: {
@@ -42,7 +42,8 @@ export const viewport: Viewport = {
 const personLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
-  name: profile.name,
+  name: site.personName,
+  alternateName: profile.name,
   url: site.url,
   jobTitle: profile.shortRole,
   email: `mailto:${profile.email}`,

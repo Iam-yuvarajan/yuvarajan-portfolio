@@ -32,6 +32,9 @@ const POLL_MS = 60_000;
 /** How long a day that just gained contributions stays highlighted. */
 const BUMP_MS = 2600;
 const COUNT_UP_MS = 900;
+/** Snake: trail length in cells and how many cells it crosses per second. */
+const SNAKE_LENGTH = 5;
+const SNAKE_SPEED = 12;
 
 const utc = (date: string) => new Date(`${date}T00:00:00Z`);
 
@@ -78,25 +81,16 @@ function monthLabels(weeks: (ContributionDay | null)[][]) {
   return labels;
 }
 
-/** "just now", "3 min ago", "2 h ago" — how fresh the numbers on screen are. */
-function freshness(at: number, now: number) {
-  const mins = Math.floor((now - at) / 60_000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins} min ago`;
-  return `${Math.floor(mins / 60)} h ago`;
-}
-
 export default function GitHubContributions() {
   const [state, setState] = useState<State>({ status: 'loading' });
   /** Days that gained contributions since the last poll, highlighted for a moment. */
   const [bumped, setBumped] = useState<string[]>([]);
   /** The number on screen, which counts up to the real total. */
   const [shown, setShown] = useState(0);
-  const [checkedAt, setCheckedAt] = useState<number | null>(null);
-  const [now, setNow] = useState(() => Date.now());
   const [entering, setEntering] = useState(true);
 
   const counts = useRef<Map<string, number> | null>(null);
+  const snake = useRef<SVGGElement>(null);
   const shownRef = useRef(0);
 
   // Poll while the tab is visible, and re-check the moment it is focused again.
@@ -132,8 +126,6 @@ export default function GitHubContributions() {
         counts.current = next;
 
         setState({ status: 'ready', data });
-        setCheckedAt(Date.now());
-        setNow(Date.now());
       } catch (error) {
         if (live && (error as Error).name !== 'AbortError') {
           // A failed re-check keeps the graph that is already on screen.
@@ -200,12 +192,6 @@ export default function GitHubContributions() {
     return () => clearTimeout(t);
   }, [state.status, entering]);
 
-  // Keep the "updated …" label honest between polls.
-  useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 30_000);
-    return () => clearInterval(t);
-  }, []);
-
   const weeks = state.status === 'ready' ? buildWeeks(state.data.contributions) : [];
   const labels = state.status === 'ready' ? monthLabels(weeks) : [];
   const width = LEFT + weeks.length * STEP;
@@ -213,6 +199,76 @@ export default function GitHubContributions() {
   const profileHref = profile.links.github || `https://github.com/${copy.username}`;
   const lastDate = state.status === 'ready' ? state.data.contributions.at(-1)?.date : undefined;
   const bumpedSet = new Set(bumped);
+  const weekCount = weeks.length;
+
+  /**
+   * The snake: a short trail that crawls the grid in a serpentine, down one week
+   * column and up the next. Segments are moved by setting x/y straight on the SVG
+   * nodes, so a year of cells is never re-rendered for it. It rests while the tab
+   * is hidden and never starts under prefers-reduced-motion.
+   */
+  useEffect(() => {
+    const group = snake.current;
+    if (!group || !weekCount || prefersReducedMotion()) return;
+
+    const forward: [number, number][] = [];
+    for (let col = 0; col < weekCount; col++) {
+      for (let step = 0; step < 7; step++) {
+        const row = col % 2 === 0 ? step : 6 - step;
+        forward.push([LEFT + col * STEP, TOP + row * STEP]);
+      }
+    }
+    // Crawl back the way it came, so the loop closes with no jump at the seam.
+    const path = [...forward, ...forward.slice(1, -1).reverse()];
+
+    const segments = Array.from(group.querySelectorAll<SVGRectElement>('rect'));
+    let raf = 0;
+    let startedAt = 0;
+    let offset = 0; // cells travelled before the last pause
+    let travelled = 0;
+
+    const frame = (t: number) => {
+      if (!startedAt) startedAt = t;
+      const head = offset + ((t - startedAt) / 1000) * SNAKE_SPEED;
+      travelled = head;
+      segments.forEach((segment, i) => {
+        const at = head - i;
+        const index = ((Math.floor(at) % path.length) + path.length) % path.length;
+        const next = (index + 1) % path.length;
+        const f = at - Math.floor(at);
+        const [x, y] = path[index];
+        const [nx, ny] = path[next];
+        // Glide between neighbours, but jump the seam where the path wraps around.
+        const far = Math.abs(nx - x) > STEP * 1.5 || Math.abs(ny - y) > STEP * 1.5;
+        segment.setAttribute('x', String(far ? x : x + (nx - x) * f));
+        segment.setAttribute('y', String(far ? y : y + (ny - y) * f));
+      });
+      raf = requestAnimationFrame(frame);
+    };
+
+    const start = () => {
+      if (raf) return;
+      startedAt = 0;
+      raf = requestAnimationFrame(frame);
+    };
+    const stop = () => {
+      if (!raf) return;
+      cancelAnimationFrame(raf);
+      raf = 0;
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') return start();
+      offset = travelled; // resume from where the trail stopped
+      stop();
+    };
+
+    start();
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      stop();
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, [weekCount]);
 
   return (
     <section className="gh" aria-labelledby="github-contributions-title" data-reveal>
@@ -252,12 +308,6 @@ export default function GitHubContributions() {
           <p className="gh__total mono">
             <strong aria-live="polite">{shown.toLocaleString('en-US')}</strong>
             <span>{copy.totalSuffix}</span>
-            {checkedAt && (
-              <span className={`gh__live${bumped.length ? ' is-new' : ''}`}>
-                <span className="gh__live-dot" aria-hidden="true" />
-                {copy.live} · {freshness(checkedAt, now)}
-              </span>
-            )}
           </p>
 
           <div className="gh__body">
@@ -319,6 +369,20 @@ export default function GitHubContributions() {
                     )}
                   </g>
                 ))}
+                <g className="gh__snake" ref={snake} aria-hidden="true">
+                  {Array.from({ length: SNAKE_LENGTH }, (_, i) => (
+                    <rect
+                      key={i}
+                      className={`gh__snake-seg${i === 0 ? ' is-head' : ''}`}
+                      style={{ '--i': i } as React.CSSProperties}
+                      x={-STEP * 2}
+                      y={-STEP * 2}
+                      width={CELL}
+                      height={CELL}
+                      rx={3}
+                    />
+                  ))}
+                </g>
               </svg>
             </div>
           </div>

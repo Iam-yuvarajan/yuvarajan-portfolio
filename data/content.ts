@@ -393,8 +393,6 @@ export const github = {
   error: 'The contribution graph could not load. Open the profile instead.',
   profile: 'Open GitHub profile',
   totalSuffix: 'contributions in the last year',
-  /** Label on the live badge; the graph re-checks GitHub every minute while the tab is open. */
-  live: 'live',
 };
 
 /* -------------------------------------------------------------------- ask */

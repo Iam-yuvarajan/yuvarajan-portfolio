@@ -32,9 +32,10 @@ const POLL_MS = 60_000;
 /** How long a day that just gained contributions stays highlighted. */
 const BUMP_MS = 2600;
 const COUNT_UP_MS = 900;
-/** Snake: trail length in cells and how many cells it crosses per second. */
+/** Snake: trail length in squares, travel speed, and the gap between segments. */
 const SNAKE_LENGTH = 5;
-const SNAKE_SPEED = 12;
+const SNAKE_SPEED_PX = 150;
+const SNAKE_GAP_PX = STEP;
 
 const utc = (date: string) => new Date(`${date}T00:00:00Z`);
 
@@ -91,6 +92,8 @@ export default function GitHubContributions() {
 
   const counts = useRef<Map<string, number> | null>(null);
   const snake = useRef<SVGGElement>(null);
+  /** Pixels travelled along the loop, kept across pauses and re-polls. */
+  const progress = useRef(0);
   const shownRef = useRef(0);
 
   // Poll while the tab is visible, and re-check the moment it is focused again.
@@ -199,56 +202,74 @@ export default function GitHubContributions() {
   const profileHref = profile.links.github || `https://github.com/${copy.username}`;
   const lastDate = state.status === 'ready' ? state.data.contributions.at(-1)?.date : undefined;
   const bumpedSet = new Set(bumped);
-  const weekCount = weeks.length;
+
+  /** Grid positions of the days that have contributions — the snake's whole route. */
+  const route = weeks
+    .flatMap((week, col) => week.map((day, row) => (day && day.level > 0 ? `${col},${row}` : '')))
+    .filter(Boolean)
+    .join(' ');
 
   /**
-   * The snake: a short trail that crawls the grid in a serpentine, down one week
-   * column and up the next. Segments are moved by setting x/y straight on the SVG
-   * nodes, so a year of cells is never re-rendered for it. It rests while the tab
-   * is hidden and never starts under prefers-reduced-motion.
+   * The snake: a short trail that visits only the days that actually have
+   * contributions, gliding from one filled square to the next at a steady pixel
+   * speed so long gaps are crossed smoothly. It walks the year out and then back,
+   * so the loop closes with no jump. Segments are moved by writing x/y straight on
+   * the SVG nodes, so no cell re-renders for it; it rests while the tab is hidden
+   * and never starts under prefers-reduced-motion.
    */
   useEffect(() => {
     const group = snake.current;
-    if (!group || !weekCount || prefersReducedMotion()) return;
+    if (!group || !route || prefersReducedMotion()) return;
 
-    const forward: [number, number][] = [];
-    for (let col = 0; col < weekCount; col++) {
-      for (let step = 0; step < 7; step++) {
-        const row = col % 2 === 0 ? step : 6 - step;
-        forward.push([LEFT + col * STEP, TOP + row * STEP]);
+    const filled = route.split(' ').map((pair) => {
+      const [col, row] = pair.split(',').map(Number);
+      return [LEFT + col * STEP, TOP + row * STEP] as [number, number];
+    });
+    if (filled.length < 2) return;
+
+    // Out along the filled days and back again: one continuous closed loop.
+    const path = [...filled, ...filled.slice(1, -1).reverse()];
+    const spans = path.map((point, i) => {
+      const next = path[(i + 1) % path.length];
+      return Math.hypot(next[0] - point[0], next[1] - point[1]);
+    });
+    const length = spans.reduce((sum, d) => sum + d, 0);
+    if (!length) return;
+
+    /** The point `distance` pixels along the loop. */
+    const pointAt = (distance: number): [number, number] => {
+      let left = ((distance % length) + length) % length;
+      for (let i = 0; i < path.length; i++) {
+        if (left <= spans[i]) {
+          const f = spans[i] ? left / spans[i] : 0;
+          const [x, y] = path[i];
+          const [nx, ny] = path[(i + 1) % path.length];
+          return [x + (nx - x) * f, y + (ny - y) * f];
+        }
+        left -= spans[i];
       }
-    }
-    // Crawl back the way it came, so the loop closes with no jump at the seam.
-    const path = [...forward, ...forward.slice(1, -1).reverse()];
+      return path[0];
+    };
 
     const segments = Array.from(group.querySelectorAll<SVGRectElement>('rect'));
     let raf = 0;
     let startedAt = 0;
-    let offset = 0; // cells travelled before the last pause
-    let travelled = 0;
 
     const frame = (t: number) => {
       if (!startedAt) startedAt = t;
-      const head = offset + ((t - startedAt) / 1000) * SNAKE_SPEED;
-      travelled = head;
+      const head = progress.current + ((t - startedAt) / 1000) * SNAKE_SPEED_PX;
+      progress.current = head;
       segments.forEach((segment, i) => {
-        const at = head - i;
-        const index = ((Math.floor(at) % path.length) + path.length) % path.length;
-        const next = (index + 1) % path.length;
-        const f = at - Math.floor(at);
-        const [x, y] = path[index];
-        const [nx, ny] = path[next];
-        // Glide between neighbours, but jump the seam where the path wraps around.
-        const far = Math.abs(nx - x) > STEP * 1.5 || Math.abs(ny - y) > STEP * 1.5;
-        segment.setAttribute('x', String(far ? x : x + (nx - x) * f));
-        segment.setAttribute('y', String(far ? y : y + (ny - y) * f));
+        const [x, y] = pointAt(head - i * SNAKE_GAP_PX);
+        segment.setAttribute('x', String(x));
+        segment.setAttribute('y', String(y));
       });
       raf = requestAnimationFrame(frame);
     };
 
     const start = () => {
       if (raf) return;
-      startedAt = 0;
+      startedAt = 0; // the next frame re-bases the clock, so no time is "owed"
       raf = requestAnimationFrame(frame);
     };
     const stop = () => {
@@ -256,11 +277,7 @@ export default function GitHubContributions() {
       cancelAnimationFrame(raf);
       raf = 0;
     };
-    const onVisibility = () => {
-      if (document.visibilityState === 'visible') return start();
-      offset = travelled; // resume from where the trail stopped
-      stop();
-    };
+    const onVisibility = () => (document.visibilityState === 'visible' ? start() : stop());
 
     start();
     document.addEventListener('visibilitychange', onVisibility);
@@ -268,7 +285,7 @@ export default function GitHubContributions() {
       stop();
       document.removeEventListener('visibilitychange', onVisibility);
     };
-  }, [weekCount]);
+  }, [route]);
 
   return (
     <section className="gh" aria-labelledby="github-contributions-title" data-reveal>

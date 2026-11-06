@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { profile } from '@/data/content';
 
 /**
@@ -21,7 +22,7 @@ export default function Portrait() {
       onPointerLeave={(e) => e.pointerType === 'mouse' && setLit(false)}
     >
       <span className="portrait__ring" aria-hidden="true" />
-      <img className="portrait__img" src="/yuvarajan.jpg" alt="" width={160} height={160} decoding="async" />
+      <Image className="portrait__img" src="/yuvarajan.jpg" alt="" width={160} height={160} priority />
     </button>
   );
 }

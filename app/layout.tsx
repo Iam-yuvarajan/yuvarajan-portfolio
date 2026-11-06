@@ -25,8 +25,8 @@ export const metadata: Metadata = {
     title: site.title,
     description: site.description,
     locale: 'en_IN',
-    firstName: profile.firstName,
-    lastName: profile.lastName,
+    firstName: site.firstName,
+    lastName: site.lastName,
   },
   twitter: { card: 'summary', title: site.title, description: site.description },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
@@ -36,6 +36,16 @@ export const viewport: Viewport = {
   themeColor: themeColors[DEFAULT_WORLD], // updated per world at runtime (lib/world.ts)
   width: 'device-width',
   initialScale: 1,
+};
+
+/** Site entity so Google can associate the name with the homepage. */
+const websiteLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: site.title,
+  alternateName: profile.name,
+  url: site.url,
+  inLanguage: 'en-IN',
 };
 
 /** Structured data so search engines know the site is about this person. */
@@ -69,6 +79,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personLd) }} />
         {children}
       </body>

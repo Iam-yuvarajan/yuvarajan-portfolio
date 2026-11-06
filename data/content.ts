@@ -106,11 +106,14 @@ export const site = {
   url: 'https://jyuvarajan.vercel.app',
   /** Google/search title. Also the source of the Person entity name. */
   title: 'J Yuvarajan | AI Engineer',
+  /** Search identity, using the same name order as the Google title. */
   personName: 'J Yuvarajan',
+  firstName: 'J',
+  lastName: 'Yuvarajan',
   description:
     'J Yuvarajan: AI engineer and ECE student from Hosur, Tamil Nadu. Builds AI tools and web apps with Python, JavaScript and LLMs. SIH 2026 top 40 finalist. Open to AI engineer roles and internships.',
   keywords: ['J Yuvarajan', 'Yuvarajan J', 'Yuvarajan', 'AI engineer', 'AI developer', 'web application developer', 'ECE', 'Python', 'Hosur', 'Bengaluru', 'portfolio'],
-  copyright: '© 2026 Yuvarajan J',
+  copyright: '© 2026 J Yuvarajan',
   builtWith: 'Designed & built by hand. Next.js, GSAP, plain CSS.',
 };
 
@@ -171,7 +174,7 @@ export { worlds, sections, allSections } from './worlds';
 export const hero = {
   metaLeft: `Portfolio · ${profile.revision}`,
   intro:
-    'I build AI-powered tools and web applications. Python at the core, HTML on the surface, and a *vibe-coding* workflow that turns ideas into working products fast.',
+    'I’m J Yuvarajan. I build AI-powered tools and web applications. Python at the core, HTML on the surface, and a *vibe-coding* workflow that turns ideas into working products fast.',
   ctaPrimary: 'See the work ↓',
   ctaResume: 'Download resume',
   stats: [

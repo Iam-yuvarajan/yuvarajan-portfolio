@@ -13,7 +13,7 @@ tech + outcome) are filled.
 - **Upstash Redis on Vercel:** not connected yet, so the live notes wall shows "not connected yet". See README → "Adding Upstash on Vercel".
 
 - **LinkedIn URL:** `profile.links.linkedin` is empty. The LinkedIn button, palette action and shell line appear automatically once it's filled.
-- **Custom domain:** none yet. `site.url` is the Vercel address and `metadataBase` is already set in `app/layout.tsx`; update `site.url` when a custom domain is ready.
+- **Custom domain:** none yet. The canonical Vercel address is `https://jyuvarajan.vercel.app`; `site.url` and `metadataBase` are already set in `data/content.ts` and `app/layout.tsx`. Update both when a custom domain is ready.
 - **Internship / work experience:** none supplied, so no stage is rendered.
 
 ## Provisional design defaults (not marked on the page, change freely)

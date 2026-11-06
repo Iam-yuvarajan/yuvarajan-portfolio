@@ -60,6 +60,13 @@ export default function CommandPalette() {
         run: async () => toast((await copyText(profile.email)) ? 'Email copied' : 'Copy failed'),
       },
       {
+        id: 'resume-view',
+        label: 'View resume',
+        hint: profile.resume.file,
+        group: 'Actions',
+        run: () => window.open(profile.resume.href, '_blank', 'noopener,noreferrer'),
+      },
+      {
         id: 'resume',
         label: 'Download resume',
         hint: profile.resume.file,

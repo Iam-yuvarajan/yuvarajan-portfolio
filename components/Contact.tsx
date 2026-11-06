@@ -111,6 +111,9 @@ export default function Contact() {
               <a className="btn btn--ghost" href={`mailto:${profile.email}`}>
                 Email ↗
               </a>
+              <a className="btn btn--ghost" href={profile.resume.href} target="_blank" rel="noopener noreferrer">
+                View resume ↗
+              </a>
               <a className="btn btn--primary" href={profile.resume.href} download={profile.resume.file}>
                 Download resume ↓
               </a>

@@ -43,6 +43,9 @@ export default function Hero() {
             <a className="btn btn--primary" href="#work">
               {hero.ctaPrimary}
             </a>
+            <a className="btn btn--ghost" href={profile.resume.href} target="_blank" rel="noopener noreferrer">
+              View resume ↗
+            </a>
             <a className="btn btn--ghost" href={profile.resume.href} download={profile.resume.file}>
               {hero.ctaResume} ↓
             </a>

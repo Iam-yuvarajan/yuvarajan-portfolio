@@ -82,7 +82,7 @@ export default function Shell() {
               '  cd <world>           ~/client ~/server ~/agents ~/whoami',
               '  cat impact.json      headline numbers (GET /api/experience)',
               '  cat links            where to find me (GET /api/stats)',
-              '  cat resume           download the resume (PDF)',
+              '  cat resume           view/download the resume (PDF)',
               '  curl <route>         ' + ROUTES.join(' '),
               '  git log              the journey, as commits',
               '  whoami               who runs this place',
@@ -125,6 +125,7 @@ export default function Shell() {
             if (res.ok) {
               const kb = Math.round(Number(res.headers.get('content-length') || 0) / 1024);
               out(`${profile.resume.file}  application/pdf${kb ? `  ${kb} KB` : ''}`);
+              print({ kind: 'link', text: `↗ view ${profile.resume.file}`, href: profile.resume.href });
               print({ kind: 'link', text: `↓ download ${profile.resume.file}`, href: profile.resume.href });
             }
           } else out(`cat: ${arg || '<file>'}: no such file. try impact.json, links or resume`, 'err');
@@ -256,7 +257,7 @@ export default function Shell() {
                       <Prompt at={l.cwd ?? cwd} /> {l.text}
                     </>
                   ) : l.kind === 'link' && l.href ? (
-                    <a className="sh__a" href={l.href} download={profile.resume.file}>
+                    <a className="sh__a" href={l.href} target={l.text.startsWith('↗') ? '_blank' : undefined} rel={l.text.startsWith('↗') ? 'noopener noreferrer' : undefined} download={l.text.startsWith('↓') ? profile.resume.file : undefined}>
                       {l.text}
                     </a>
                   ) : (

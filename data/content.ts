@@ -95,6 +95,12 @@ export const profile = {
   tzName: 'Asia/Kolkata',
   email: 'yuvarajan278@gmail.com',
   baseLocation: 'Hosur, Tamil Nadu', // from Yuvarajan_Resume.pdf
+  /** Display hostname for the loader and shell. Never used in URLs. */
+  host: 'jyuvarajan',
+  replyTime: 'Within 24 hours',
+  resume: { href: '/Yuvarajan-J-Resume.pdf', file: 'Yuvarajan-J-Resume.pdf' },
+  serial: 'YJ-2026-0001',
+  revision: 'Rev. 2026.11',
   links: {
     leetcode: 'https://leetcode.com/u/yuvarajan_software/',
     huggingface: 'https://huggingface.co/yuvarajan-pixel',

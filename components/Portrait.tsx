@@ -22,7 +22,7 @@ export default function Portrait() {
       onPointerLeave={(e) => e.pointerType === 'mouse' && setLit(false)}
     >
       <span className="portrait__ring" aria-hidden="true" />
-      <Image className="portrait__img" src="/yuvarajan.jpg" alt="" width={160} height={160} priority />
+      <Image className="portrait__img" src="/portrait.jpg" alt="" width={160} height={160} priority />
     </button>
   );
 }

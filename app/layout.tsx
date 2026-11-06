@@ -30,6 +30,7 @@ export const metadata: Metadata = {
   },
   twitter: { card: 'summary', title: site.title, description: site.description },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
+  verification: { google: 'MDitVXSWxdiE_h-rQBEjVgf0brx-cAT_NV5c_nFNSyU' },
 };
 
 export const viewport: Viewport = {

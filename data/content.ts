@@ -85,7 +85,7 @@ export const profile = {
    * Drop a recording at `public/name.mp3` to use your own voice instead — the
    * button prefers the file and only falls back to the browser voice if it is missing.
    */
-  pronunciation: { display: 'yu-va-raja-an', speak: 'yoo vah raa jan' },
+  pronunciation: { display: 'yu-va-raj-an', speak: 'yoo vah raj an' },
   role: 'AI Engineer · ECE Student',
   shortRole: 'AI Engineer',
   availability: 'Open to AI roles · internships',

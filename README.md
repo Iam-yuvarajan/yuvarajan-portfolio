@@ -16,8 +16,9 @@ The script installs dependencies on first run.
 `.vercelignore` uploads only the site's source; personal files in the repo root (photos, other PDFs) stay local.
 
 - **Content:** every bit of personal text is in `data/content.ts`. Values that are still missing are listed in `MISSING.md`.
-- **API:** `GET /api/projects`, `/api/stats`, `/api/experience`, `/api/skills`, `GET|POST /api/notes`.
+- **API:** `GET /api/projects`, `/api/stats`, `/api/experience`, `/api/skills`, `GET|POST /api/notes`, `GET /api/github-contributions`.
 - **Notes bot:** the click-only Q&A panel in Notes. Questions and pre-written answers are in `askBot` in `data/content.ts`; there is no text input and no live model call.
+- **GitHub graph:** the heatmap in Notes is rendered by `components/GitHubContributions.tsx`. `/api/github-contributions` proxies and caches the public contribution data for six hours, so no GitHub token or extra package is needed. The account is set by `GITHUB_USERNAME` in `data/content.ts`.
 - **Resume:** served from `public/Yuvarajan-J-Resume.pdf`.
 - **Project links:** only the links listed in `projects[].links` in `data/content.ts` are published (YUVA AI live demo, Trust-CV and Sollunga Bot source). Discovery Agent has none and shows as private. Set `profile.showGithub = false` to hide the GitHub profile everywhere. Social buttons appear only for links that are non-empty in `profile.links` (LinkedIn is empty for now).
 

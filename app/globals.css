@@ -2280,6 +2280,222 @@ html.menu-open body {
   }
 }
 
+/* ----------------------------------------------------------- github graph */
+
+.gh {
+  position: relative;
+  max-width: 760px;
+  margin: 0 0 36px;
+  padding: 18px 20px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--accent) 6%, transparent), transparent 34%),
+    var(--card);
+  box-shadow: 0 22px 44px -34px color-mix(in srgb, var(--shadow) 40%, transparent);
+
+  /* Green cells echo GitHub's graph, but every shade is derived from the
+     current world so the card keeps its paper/terminal/indigo/cream palette. */
+  --gh-0: var(--bg-sunk);
+  --gh-1: color-mix(in srgb, var(--ok) 20%, var(--bg-sunk));
+  --gh-2: color-mix(in srgb, var(--ok) 40%, var(--bg-sunk));
+  --gh-3: color-mix(in srgb, var(--ok) 64%, var(--bg-sunk));
+  --gh-4: var(--ok);
+}
+.gh__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+.gh__kicker {
+  margin: 0 0 4px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.gh__title {
+  margin: 0;
+  font-family: var(--font-display-stack);
+  font-weight: 400;
+  font-size: clamp(24px, 3vw, 32px);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+}
+.gh__profile {
+  margin-left: auto;
+  padding-bottom: 2px;
+  font-size: 11px;
+  color: var(--accent-text);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent-text) 45%, transparent);
+  white-space: nowrap;
+}
+.gh__profile:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+.gh__sub {
+  margin: 10px 0 16px;
+  max-width: 58ch;
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+.gh__loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 112px;
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+.gh__spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--line);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: ghSpin 0.8s linear infinite;
+}
+.gh__error {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  min-height: 112px;
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+.gh__error .mono:first-child {
+  color: var(--err);
+}
+.gh__error a {
+  color: var(--accent-text);
+  text-underline-offset: 3px;
+}
+.gh__total {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 10px;
+  font-size: 11px;
+  color: var(--ink-muted);
+}
+.gh__total strong {
+  font-family: var(--font-display-stack);
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--ink);
+}
+.gh__body {
+  min-width: 0;
+}
+.gh__scroll {
+  overflow-x: auto;
+  padding-bottom: 6px;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+.gh__scroll:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+.gh__chart {
+  display: block;
+  width: auto;
+  max-width: none;
+  height: auto;
+}
+.gh__month,
+.gh__weekday {
+  font-family: var(--font-mono-stack);
+  font-size: 9px;
+  fill: var(--ink-muted);
+}
+.gh__cell {
+  transition: fill 0.2s var(--ease);
+}
+.gh__cell--0 {
+  fill: var(--gh-0);
+}
+.gh__cell--1 {
+  fill: var(--gh-1);
+}
+.gh__cell--2 {
+  fill: var(--gh-2);
+}
+.gh__cell--3 {
+  fill: var(--gh-3);
+}
+.gh__cell--4 {
+  fill: var(--gh-4);
+}
+.gh__legend {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: 10px;
+  color: var(--ink-muted);
+}
+.gh__swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--gh-0);
+}
+.gh__swatch--1 {
+  background: var(--gh-1);
+}
+.gh__swatch--2 {
+  background: var(--gh-2);
+}
+.gh__swatch--3 {
+  background: var(--gh-3);
+}
+.gh__swatch--4 {
+  background: var(--gh-4);
+}
+@keyframes ghSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (max-width: 560px) {
+  .gh {
+    margin-bottom: 28px;
+    padding: 16px;
+  }
+  .gh__profile {
+    margin-left: 0;
+  }
+  .gh__sub {
+    font-size: 13px;
+  }
+  .gh__total strong {
+    font-size: 24px;
+  }
+  .gh__loading,
+  .gh__error {
+    min-height: 96px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gh__spinner {
+    animation: none;
+  }
+  .gh__cell {
+    transition: none;
+  }
+}
+
 /* --------------------------------------------------------------- contact */
 
 .section--contact .sec-head {

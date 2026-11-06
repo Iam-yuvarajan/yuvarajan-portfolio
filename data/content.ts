@@ -72,6 +72,8 @@ export interface Project {
 
 /* ---------------------------------------------------------------- profile */
 
+const GITHUB_USERNAME = 'Iam-yuvarajan';
+
 export const profile = {
   name: 'Yuvarajan J',
   firstName: 'Yuvarajan',
@@ -96,7 +98,7 @@ export const profile = {
     leetcode: 'https://leetcode.com/u/yuvarajan_software/',
     huggingface: 'https://huggingface.co/yuvarajan-pixel',
     linkedin: '', // not provided yet; the button, palette action and shell line appear once this is filled
-    github: 'https://github.com/Iam-yuvarajan', // shown only if showGithub is true
+    github: `https://github.com/${GITHUB_USERNAME}`, // shown only if showGithub is true
   },
   showGithub: true,
 };
@@ -382,6 +384,18 @@ export const shell = {
     'Hiring Yuvarajan J ... ✓ offer drafted',
     `Next step: email ${profile.email}`,
   ],
+};
+
+/* --------------------------------------------------------- github graph */
+
+export const github = {
+  username: GITHUB_USERNAME,
+  heading: 'GitHub Contributions',
+  sub: 'A year of commits, pushes and late-night fixes.',
+  loading: 'Loading contribution graph…',
+  error: 'The contribution graph could not load. Open the profile instead.',
+  profile: 'Open GitHub profile',
+  totalSuffix: 'contributions in the last year',
 };
 
 /* ------------------------------------------------------------------ notes */

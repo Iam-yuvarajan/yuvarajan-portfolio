@@ -6,6 +6,7 @@ import type { Note } from '@/lib/notes';
 import { timedFetch, toast } from '@/lib/client';
 import SectionHead from './SectionHead';
 import AskBot from './AskBot';
+import GitHubContributions from './GitHubContributions';
 
 const pad = (n: number) => String(n).padStart(4, '0');
 
@@ -61,6 +62,8 @@ export default function Notes() {
         <SectionHead id="notes" heading={copy.heading} sub={copy.sub} />
 
         <AskBot />
+
+        <GitHubContributions />
 
         <form className="composer" onSubmit={submit} data-reveal noValidate>
           <div className="composer__head mono">

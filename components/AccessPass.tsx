@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { hero, profile, visibleLinks } from '@/data/content';
-import { entrySection, worlds, type WorldId } from '@/data/worlds';
+import { contrast, entrySection, worlds, type WorldId } from '@/data/worlds';
 import { goTo, useActive } from '@/lib/world';
 import { Rich } from '@/lib/text';
 import { prefersReducedMotion } from '@/lib/client';
@@ -11,12 +11,16 @@ const ROPE = 120; // rest lanyard length in px
 const G = 2600; // "gravity" tuning constant
 const DAMP = 1.6;
 
+/** Ink that stays readable on a world's accent colour. */
+const cellInk = (hex: string) => (contrast('#FFFFFF', hex) >= 4.5 ? '#FFFFFF' : '#0D0B08');
+
 export default function AccessPass() {
   const rig = useRef<HTMLDivElement>(null);
   const card = useRef<HTMLDivElement>(null);
   const rope = useRef<SVGLineElement>(null);
   const [flipped, setFlipped] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   // physics state lives in a ref to avoid re-rendering every frame
   const s = useRef({ th: 0.18, w: 0, len: ROPE, lv: 0, drag: false, gx: 0, gy: 0, moved: 0, sx: 0, sy: 0, reduced: false });
@@ -111,25 +115,29 @@ export default function AccessPass() {
   };
 
   const onKey = (e: React.KeyboardEvent) => {
+    if ((e.target as HTMLElement).closest('a,button')) return;
     if (e.key === 'ArrowLeft') nudge(-1);
     if (e.key === 'ArrowRight') nudge(1);
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setFlipped((f) => !f);
+    }
   };
 
   const links = visibleLinks();
   const { world } = useActive();
   const jump = (id: WorldId) => goTo(entrySection(id));
 
-  // Roving tabindex: Left/Right move focus between tabs, Enter/Space selects (native button).
-  const onTabKey = (e: React.KeyboardEvent<HTMLButtonElement>) => {
-    e.stopPropagation(); // keep arrows away from the card's swing nudge
-    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight' && e.key !== 'Home' && e.key !== 'End') return;
-    e.preventDefault();
-    const tabs = Array.from(e.currentTarget.parentElement!.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
-    const i = tabs.indexOf(e.currentTarget);
-    const next =
-      e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : (i + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
-    tabs[next].focus();
+  const copySerial = async () => {
+    try {
+      await navigator.clipboard.writeText(profile.serial);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1600);
+    } catch {
+      // clipboard can be blocked; the serial stays visible either way
+    }
   };
+
   const stop = (e: React.PointerEvent) => e.stopPropagation();
 
   return (
@@ -142,6 +150,9 @@ export default function AccessPass() {
         <div
           ref={card}
           className={`pass${flipped ? ' is-flipped' : ''}${dragging ? ' is-dragging' : ''}`}
+          role="group"
+          tabIndex={0}
+          aria-label={`Access pass for ${profile.name}. Drag or use the arrow keys to swing it, press Enter to flip.`}
           onPointerDown={onDown}
           onPointerMove={onMove}
           onPointerUp={onUp}
@@ -149,30 +160,45 @@ export default function AccessPass() {
           onKeyDown={onKey}
         >
           <div className="pass__clip" aria-hidden="true" />
+          <div className="pass__strap mono" aria-hidden="true">
+            <span>{profile.name} · 2026</span>
+          </div>
           <div className="pass__inner">
             <section className="pass__face pass__front" aria-label="Access pass, front" inert={flipped}>
-              <div className="pass__tabs mono" role="tablist" aria-label="Worlds">
-                {worlds.map((w) => (
-                  <button
-                    key={w.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={world === w.id}
-                    aria-controls={entrySection(w.id)}
-                    tabIndex={world === w.id ? 0 : -1}
-                    className={world === w.id ? 'is-active' : undefined}
-                    onPointerDown={stop}
-                    onPointerUp={stop}
-                    onKeyDown={onTabKey}
-                    onClick={() => jump(w.id)}
-                  >
-                    {w.path}
-                  </button>
-                ))}
+              <div className="pass__top mono">
+                <span>access pass</span>
+                <span>2026</span>
               </div>
-              <div className="pass__photo" aria-hidden="true">
-                {profile.initials}
+
+              <div className="pass__chip" role="group" aria-label="Jump to a world by colour">
+                {worlds.map((w) => {
+                  const active = world === w.id;
+                  return (
+                    <button
+                      key={w.id}
+                      type="button"
+                      className={`pass__chip-cell${active ? ' is-active' : ''}`}
+                      style={
+                        {
+                          '--cell': w.palette.accent,
+                          '--cell-ink': cellInk(w.palette.accent),
+                        } as React.CSSProperties
+                      }
+                      aria-label={`Go to ${w.label} (${w.path})`}
+                      aria-pressed={active}
+                      onPointerDown={stop}
+                      onPointerUp={stop}
+                      onClick={() => jump(w.id)}
+                    >
+                      <span className="mono">{w.path}</span>
+                    </button>
+                  );
+                })}
+                <span className="pass__initials" aria-hidden="true">
+                  {profile.initials}
+                </span>
               </div>
+
               <div className="pass__name">{profile.name}</div>
               <div className="pass__role mono">{profile.shortRole}</div>
               <dl className="pass__rows mono">
@@ -191,13 +217,21 @@ export default function AccessPass() {
                   <dd className="ok">{profile.passStatus}</dd>
                 </div>
               </dl>
-              <div className="pass__foot mono">
-                <span>{profile.serial}</span>
-                <button type="button" className="pass__flip" onClick={() => setFlipped(true)}>
-                  {hero.passFlipHint}
+              <div className="pass__code mono">
+                <span className="pass__barcode" aria-hidden="true" />
+                <button
+                  type="button"
+                  className="pass__serial"
+                  onClick={copySerial}
+                  title="Copy serial"
+                  aria-label={copied ? 'Serial copied' : `Copy serial ${profile.serial}`}
+                >
+                  {copied ? 'copied ✓' : profile.serial}
                 </button>
+                <span className="sr-only" role="status">
+                  {copied ? 'Serial copied to clipboard' : ''}
+                </span>
               </div>
-              <div className="pass__barcode" aria-hidden="true" />
             </section>
 
             <section className="pass__face pass__back" aria-label="Access pass, back" inert={!flipped}>
@@ -233,13 +267,18 @@ export default function AccessPass() {
                   ))}
                 </ul>
               </div>
-              <button type="button" className="pass__flip mono" onClick={() => setFlipped(false)}>
-                {hero.passBackHint}
-              </button>
             </section>
           </div>
         </div>
       </div>
+      <button
+        type="button"
+        className="pass__flip pass__flipout mono"
+        onClick={() => setFlipped((f) => !f)}
+        aria-pressed={flipped}
+      >
+        <span aria-hidden="true">↻</span> {flipped ? hero.passBackHint : hero.passFlipHint}
+      </button>
       <p className="pass-caption mono" aria-hidden="true">
         {hero.passCaption}
       </p>

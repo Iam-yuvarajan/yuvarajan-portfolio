@@ -1139,6 +1139,33 @@ html.menu-open body {
   border: 1px solid var(--line-strong);
   z-index: 3;
 }
+/* lanyard ribbon: carries the holder's name up the rope */
+.pass__strap {
+  position: absolute;
+  top: -118px;
+  left: 50%;
+  width: 28px;
+  height: 118px;
+  margin-left: -14px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--accent) 70%, var(--ink));
+  border-bottom: 0;
+  border-radius: 6px 6px 0 0;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 76%, var(--bg)), var(--accent));
+  color: var(--accent-ink);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #fff 18%, transparent), 0 6px 18px -12px var(--shadow);
+  overflow: hidden;
+}
+.pass__strap span {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  white-space: nowrap;
+  font-size: 8px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
 .pass__inner {
   position: relative;
   width: 100%;
@@ -1157,10 +1184,11 @@ html.menu-open body {
   background: var(--card);
   border: 1px solid var(--line-strong);
   border-radius: 18px;
-  padding: 30px 20px 18px;
+  padding: 26px 18px 14px;
   box-shadow: 0 1px 0 var(--card) inset, 0 24px 50px -24px color-mix(in srgb, var(--shadow) 45%, transparent), 0 4px 10px -4px color-mix(in srgb, var(--shadow) 18%, transparent);
   display: flex;
   flex-direction: column;
+  gap: 8px;
   overflow: hidden;
 }
 .pass__face::before {
@@ -1175,61 +1203,156 @@ html.menu-open body {
   background: var(--bg-sunk);
   box-shadow: inset 0 1px 2px color-mix(in srgb, var(--shadow) 20%, transparent);
 }
+/* holographic sweep — runs once when the pass is hovered or focused */
+.pass__face::after {
+  content: '';
+  position: absolute;
+  inset: -30% -60%;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 42%, rgba(255, 255, 255, 0.4) 50%, transparent 58%);
+  opacity: 0;
+  transform: translateX(-60%) rotate(6deg);
+}
+.pass:hover .pass__face::after,
+.pass:focus-visible .pass__face::after {
+  animation: pass-sheen 1.1s var(--ease) both;
+}
+@keyframes pass-sheen {
+  0% {
+    opacity: 0;
+    transform: translateX(-60%) rotate(6deg);
+  }
+  18% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(60%) rotate(6deg);
+  }
+}
+/* soft world-coloured light behind the pass */
+.pass::before {
+  content: '';
+  position: absolute;
+  inset: 12px -26px -26px;
+  z-index: -1;
+  border-radius: 34px;
+  pointer-events: none;
+  background: radial-gradient(60% 55% at 50% 100%, color-mix(in srgb, var(--accent) 38%, transparent), transparent 72%);
+  filter: blur(16px);
+  opacity: 0.5;
+  transition: opacity 0.35s ease;
+}
+.pass:hover::before,
+.pass:focus-visible::before {
+  opacity: 0.9;
+}
+.pass:focus-visible {
+  outline: none;
+}
+.pass:focus-visible .pass__face {
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent),
+    0 24px 50px -24px color-mix(in srgb, var(--shadow) 45%, transparent);
+}
 .pass__back {
   transform: rotateY(180deg);
 }
-.pass__tabs {
+.pass__top {
   display: flex;
   justify-content: space-between;
-  gap: 4px;
+  gap: 10px;
   font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--ink-muted);
-  border-bottom: 1px dashed var(--line);
-  padding: 6px 0 10px;
 }
-.pass__tabs button {
+.pass__chip {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  aspect-ratio: 1.6;
+  margin: 2px 0 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.pass__chip-cell {
+  position: relative;
   border: 0;
-  background: none;
-  padding: 3px 2px;
-  border-radius: 4px;
-  font: inherit;
-  color: var(--ink-muted);
+  padding: 0;
+  background: var(--cell, var(--accent));
+  color: var(--cell-ink, var(--accent-ink));
   cursor: pointer;
+  overflow: hidden;
+  transition: filter 0.25s ease, transform 0.3s var(--ease);
 }
-.pass__tabs button:hover {
-  color: var(--ink);
+.pass__chip-cell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.24), transparent 55%);
 }
-.pass__tabs button.is-active {
-  color: var(--accent-text);
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 4px;
+.pass__chip-cell span {
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  font-size: 9px;
+  opacity: 0.9;
 }
-.pass__photo {
-  margin: 18px 0 12px;
-  width: 88px;
-  height: 88px;
-  border-radius: 14px;
+.pass__chip-cell:hover {
+  filter: brightness(1.1) saturate(1.08);
+}
+.pass__chip-cell.is-active {
+  box-shadow: inset 0 0 0 2px var(--cell-ink, var(--accent-ink));
+  filter: brightness(1.04);
+}
+.pass__chip-cell.is-active span::before {
+  content: '●';
+  margin-right: 4px;
+  font-size: 8px;
+  vertical-align: 1px;
+}
+.pass__chip-cell:focus-visible {
+  outline: 2px solid var(--cell-ink, var(--accent-ink));
+  outline-offset: -3px;
+}
+.pass__initials {
+  position: absolute;
+  inset: 0;
+  width: 62px;
+  height: 62px;
+  margin: auto;
   display: grid;
   place-items: center;
-  background: var(--accent);
-  color: var(--accent-ink);
-  font-family: var(--font-display-stack);
-  font-size: 44px;
-  font-style: italic;
+  border-radius: 50%;
+  background: var(--card);
+  color: var(--ink);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--card) 55%, transparent), 0 4px 14px -6px rgba(0, 0, 0, 0.35);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.05em;
+  pointer-events: none;
 }
 .pass__name {
-  font-family: var(--font-display-stack);
-  font-size: 32px;
+  font-family: var(--font-body-stack);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
   line-height: 1.05;
 }
 .pass__role {
-  font-size: 12px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: var(--ink-muted);
-  margin-top: 4px;
 }
 .pass__rows {
-  margin: 16px 0 0;
+  margin: 2px 0 0;
   font-size: 12px;
 }
 .pass__rows div {
@@ -1252,14 +1375,35 @@ html.menu-open body {
 .ok {
   color: var(--ok);
 }
-.pass__foot {
-  margin-top: auto;
+.pass__code {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  font-size: 11px;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 4px;
+  font-size: 10px;
   color: var(--ink-muted);
-  padding-top: 10px;
+}
+.pass__serial {
+  border: 0;
+  background: none;
+  padding: 3px 4px;
+  margin: -3px -4px -3px 0;
+  border-radius: 4px;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  min-width: 84px;
+  text-align: right;
+}
+.pass__serial:hover {
+  color: var(--ink);
+  background-color: var(--bg-elev);
+}
+.pass__serial:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 .pass__flip {
   border: 0;
@@ -1272,9 +1416,21 @@ html.menu-open body {
 .pass__flip:hover {
   text-decoration: underline;
 }
+.pass__flipout {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 12px;
+  text-decoration: none;
+}
 .pass__barcode {
+  flex: 1;
   height: 26px;
-  margin-top: 8px;
   background: repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px 4px, var(--ink) 4px 5px, transparent 5px 9px, var(--ink) 9px 12px, transparent 12px 14px);
   opacity: 0.85;
 }
@@ -1339,10 +1495,6 @@ html.menu-open body {
 }
 .pass__clear li button.is-active {
   background-color: var(--bg-elev);
-}
-.pass__back .pass__flip {
-  margin-top: auto;
-  align-self: flex-start;
 }
 .pass-caption {
   margin: 0;
@@ -3168,7 +3320,6 @@ html.world-shift[data-shift-dir='up'] .shift-sweep i {
 .world-btn,
 .kbd-hint,
 .pages__item,
-.pass__tabs button,
 .pass__clear li button,
 .pass__flip,
 .say-name {
@@ -3202,8 +3353,6 @@ html.world-shift[data-shift-dir='up'] .shift-sweep i {
 .kbd-hint:focus-visible,
 .pages__item:hover:not(.is-active),
 .pages__item:focus-visible:not(.is-active),
-.pass__tabs button:hover:not(.is-active),
-.pass__tabs button:focus-visible:not(.is-active),
 .pass__clear li button:hover:not(.is-active),
 .pass__clear li button:focus-visible:not(.is-active),
 .pass__flip:hover,
@@ -3247,7 +3396,6 @@ html.world-shift[data-shift-dir='up'] .shift-sweep i {
   --rise-ink: var(--ink);
   border-radius: 999px;
 }
-.pass__tabs button,
 .pass__clear li button,
 .pass__flip,
 .say-name {

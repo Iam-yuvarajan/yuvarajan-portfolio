@@ -178,7 +178,7 @@ export const hero = {
   ctaResume: 'Download resume',
   stats: [
     { value: '4', label: 'main projects' },
-    { value: '7.2', label: 'CGPA' },
+    { value: '6.68', label: 'CGPA' },
     { value: '1', label: 'hackathon · SIH 2026' },
   ],
   passCaption: 'grab me, it swings ↘',
@@ -244,7 +244,7 @@ export const education = {
   college: {
     name: 'Sri Sairam College of Engineering',
     place: 'Anekal, Bengaluru',
-    cgpa: 7.2,
+    cgpa: 6.68,
     branch: 'Electronics and Communication Engineering', // from Yuvarajan_Resume.pdf
     years: '2024 – present',
     graduation: '2028 (expected)',
@@ -252,7 +252,7 @@ export const education = {
   school: {
     name: 'SDA Hr Sec School',
     place: 'Hosur',
-    tenthPercent: 75,
+    tenthPercent: 77,
     twelfthPercent: 72,
     tenthYear: '2020 – 2021',
     twelfthYear: '2022 – 2023',
@@ -267,9 +267,9 @@ export const journey = {
 };
 
 export const metrics: Metric[] = [
-  { value: '75%', label: '10th', source: 'SDA Hr Sec School, Hosur' },
+  { value: '77%', label: '10th', source: 'SDA Hr Sec School, Hosur' },
   { value: '72%', label: '12th', source: 'SDA Hr Sec School, Hosur' },
-  { value: '7.2', label: 'CGPA', source: 'Sri Sairam College of Engineering' },
+  { value: '6.68', label: 'CGPA', source: 'Sri Sairam College of Engineering' },
   { value: '4', label: 'main projects', source: 'Python & AI' },
 ];
 
@@ -282,8 +282,8 @@ export const stages: Stage[] = [
     location: education.school.place,
     range: education.school.tenthYear,
     chart: { from: 2020, to: 2021 },
-    bullets: ['Completed 10th standard', 'Scored 75%'],
-    highlight: '75% in 10th',
+    bullets: ['Completed 10th standard', 'Scored 77%'],
+    highlight: '77% in 10th',
     stack: [],
   },
   {
@@ -306,8 +306,8 @@ export const stages: Stage[] = [
     location: education.college.place,
     range: education.college.years,
     chart: { from: 2024, to: 2026, ongoing: true },
-    bullets: ['B.E. Electronics and Communication Engineering', 'CGPA 7.2', 'Expected graduation 2028', 'Building AI and web projects alongside coursework'],
-    highlight: 'CGPA 7.2',
+    bullets: ['B.E. Electronics and Communication Engineering', 'CGPA 6.68', 'Expected graduation 2028', 'Building AI and web projects alongside coursework'],
+    highlight: 'CGPA 6.68',
     stack: ['Python', 'Java', 'HTML'],
   },
   {

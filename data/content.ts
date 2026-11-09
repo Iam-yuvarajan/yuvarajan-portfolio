@@ -98,7 +98,7 @@ export const profile = {
   /** Display hostname for the loader and shell. Never used in URLs. */
   host: 'jyuvarajan',
   replyTime: 'Within 24 hours',
-  resume: { href: '/Yuvarajan-J-Resume.pdf', file: 'Yuvarajan-J-Resume.pdf' },
+  resume: { href: '/Yuvarajan_J_Resume.pdf', file: 'Yuvarajan_J_Resume.pdf' },
   serial: 'YJ-2026-0001',
   revision: 'Rev. 2026.11',
   links: {

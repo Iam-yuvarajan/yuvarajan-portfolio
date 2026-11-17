@@ -1,11 +1,6 @@
-import HomeExperience from '@/components/site/HomeExperience';
+import GateMenu from '@/components/site/GateMenu';
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: Promise<{ open?: string }>;
-}) {
-  const params = await searchParams;
-  const initialOpen = params?.open === 'true';
-  return <HomeExperience defaultOpen={initialOpen} />;
+export default function Page() {
+  return <GateMenu />;
 }
+

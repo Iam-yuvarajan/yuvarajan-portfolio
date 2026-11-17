@@ -58,30 +58,51 @@ export default function WorkGallery() {
 
   return (
     <>
-      <p className="page-intro">A few things I&apos;ve built — web apps, bots and computer-vision experiments. Drag the row sideways, hover a card to flip it, and tap an icon to see the code or the live version.</p>
+      <p className="page-intro">Four builds I&apos;m proudest of from <a href="https://jyuvarajan.vercel.app/#work" target="_blank" rel="noopener noreferrer">my main projects</a> — AI companions, retail agents, computer-vision defense, and supply pipelines. Drag the row sideways, hover a card to flip it, and explore the live demos or code.</p>
       <section className="work-gallery" aria-label="Projects">
         <ul className="work-track" ref={trackRef} tabIndex={0} aria-label="Project cards — drag or use arrow keys">
           {projects.map((project, i) => (
             <li className="flip-card" key={project.title}>
               <div className="flip-card-inner">
                 <article className="flip-face panel flip-front">
-                  <p className="eyebrow">{String(i + 1).padStart(2, '0')} / Project</p>
+                  <div className="flip-front__top">
+                    <p className="eyebrow">{String(i + 1).padStart(2, '0')} / {project.domain}</p>
+                    {project.status === 'public' && project.live ? (
+                      <span className="project-status-badge status-live">Live</span>
+                    ) : project.status === 'public' ? (
+                      <span className="project-status-badge status-source">Source</span>
+                    ) : (
+                      <span className="project-status-badge status-private">Private</span>
+                    )}
+                  </div>
                   <div>
                     <h2 className="flip-front__title">{project.title}</h2>
+                    <p className="flip-front__outcome">{project.outcome}</p>
                     <p className="flip-front__tags">{project.tags.join(' · ')}</p>
                   </div>
                 </article>
                 <article className="flip-face panel flip-back">
-                  <h3 className="flip-back__title">{project.title}</h3>
-                  <p className="flip-back__desc">{project.description}</p>
+                  <div>
+                    <div className="flip-back__header">
+                      <h3 className="flip-back__title">{project.title}</h3>
+                      <span className="eyebrow flip-back__domain">{project.domain}</span>
+                    </div>
+                    <p className="flip-back__desc">{project.description}</p>
+                  </div>
                   <dl className="flip-back__meta">
-                    <dt className="eyebrow">Language</dt>
-                    <dd>{project.language}</dd>
+                    <div>
+                      <dt className="eyebrow">Outcome</dt>
+                      <dd className="flip-back__outcome-text">{project.outcome}</dd>
+                    </div>
+                    <div>
+                      <dt className="eyebrow">Stack</dt>
+                      <dd>{project.tags.slice(0, 3).join(', ')}</dd>
+                    </div>
                   </dl>
                   <div className="flip-back__links">
                     {project.live ? (
-                      <a className="pill pill--small" href={project.live} target="_blank" rel="noopener noreferrer">
-                        Live <LinkIcon size={14} />
+                      <a className="pill pill--small pill--accent" href={project.live} target="_blank" rel="noopener noreferrer">
+                        Live Demo <LinkIcon size={14} />
                       </a>
                     ) : null}
                     {project.github ? (
@@ -89,13 +110,16 @@ export default function WorkGallery() {
                         <GithubIcon size={18} />
                       </a>
                     ) : null}
+                    {project.status === 'private' ? (
+                      <span className="pill pill--small pill--ghost">Walkthrough on request</span>
+                    ) : null}
                   </div>
                 </article>
               </div>
             </li>
           ))}
         </ul>
-        <p className="font-script work-more">more things coming soon..</p>
+        <p className="font-script work-more">more AI projects coming soon..</p>
       </section>
     </>
   );

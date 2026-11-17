@@ -160,6 +160,9 @@ export type Project = {
   tags: string[];
   period: string;
   language: string;
+  domain: string;
+  outcome: string;
+  status: 'public' | 'private';
   github?: string;
   live?: string;
 };
@@ -168,58 +171,48 @@ export const projects: Project[] = [
   {
     title: 'YUVA AI',
     description:
-      'A personal AI chat assistant where conversations are unlocked with a password, so only people I share it with can use it.',
-    tags: ['JavaScript', 'AI', 'Web App'],
+      'A password-protected AI companion that greets you and talks like a friend, a brother or another close relationship of your choice.',
+    tags: ['JavaScript', 'Node.js', 'Express', 'Groq'],
     period: 'Aug 2026',
     language: 'JavaScript',
-    github: 'https://github.com/Iam-yuvarajan/personal-ai',
+    domain: 'Conversational AI',
+    outcome: 'Live voice companion with 3 relationship modes and persistent memory',
+    status: 'public',
     live: 'https://yuva-ai.onrender.com/',
   },
   {
-    title: 'Sollunga AI Bot',
+    title: 'Sollunga Bot',
     description:
-      'An AI-powered Telegram bot that takes orders for local Indian shops. Customers can order in Tamil, English or Tanglish.',
-    tags: ['Python', 'Telegram Bot', 'AI'],
+      'An AI agent that takes shop orders over Telegram or WhatsApp in Tanglish or English, and also from voice messages. The shopkeeper gets a message and approves or rejects each order.',
+    tags: ['Python', 'Telegram', 'WhatsApp', 'Voice Input'],
     period: 'Oct 2026',
     language: 'Python',
+    domain: 'Retail automation',
+    outcome: 'Multilingual text + voice orders with owner approval',
+    status: 'public',
     github: 'https://github.com/Iam-yuvarajan/solluga-ai',
   },
   {
-    title: 'Trust CV',
+    title: 'Trust-CV',
     description:
-      'A zero-trust integrity platform for computer vision pipelines, built for Smart India Hackathon. It adds cryptographic lineage and tamper evidence from dataset to model inference.',
-    tags: ['Python', 'Computer Vision', 'SIH'],
+      'Smart India Hackathon project. Detects poisoned images and fake or duplicate images, gives each image a trust percentage, can quarantine suspicious files inside the app, and has a live camera mode that shows the trust percentage in real time.',
+    tags: ['Python', 'TypeScript', 'Vision', 'SIH 2026'],
     period: 'Sep 2026',
     language: 'Python',
+    domain: 'Image security',
+    outcome: 'SIH 2026, top 40 finalist in selection',
+    status: 'public',
     github: 'https://github.com/Iam-yuvarajan/Trust-CV-SIH',
-    live: 'https://trust-cv-sih.vercel.app',
   },
   {
-    title: 'Four Worlds Portfolio',
+    title: 'Discovery Agent',
     description:
-      'A themed personal portfolio built with Next.js, TypeScript and GSAP, with an interactive Q&A panel, API routes and a GitHub contributions heatmap.',
-    tags: ['Next.js', 'TypeScript', 'GSAP'],
+      'An app that links the gaps between industries, such as stores and their stock, so supply and demand can find each other.',
+    tags: ['Python', 'LLM', 'AI Agents'],
     period: 'Nov 2026',
-    language: 'TypeScript',
-    github: 'https://github.com/Iam-yuvarajan/yuvarajan-portfolio',
-    live: 'https://jyuvarajan.vercel.app',
-  },
-  {
-    title: 'Password Generator',
-    description:
-      'A Python command-line tool that creates strong random passwords with a chosen length, mixing uppercase, lowercase, digits and special characters.',
-    tags: ['Python', 'CLI', 'Security'],
-    period: 'Aug 2026',
     language: 'Python',
-    github: 'https://github.com/Iam-yuvarajan/password-generator',
-  },
-  {
-    title: 'Bunk Calc',
-    description:
-      'A small attendance calculator that tells you how many classes you can safely skip, or how many you need to attend to hit your target percentage.',
-    tags: ['HTML', 'CSS', 'JavaScript'],
-    period: 'Oct 2026',
-    language: 'HTML',
-    github: 'https://github.com/Iam-yuvarajan/Bunk-Calc',
+    domain: 'Supply & industry',
+    outcome: 'Working prototype, walkthrough on request',
+    status: 'private',
   },
 ];

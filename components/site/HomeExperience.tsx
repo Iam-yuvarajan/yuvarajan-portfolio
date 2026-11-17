@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { contactInfo, person, socials } from '@/data/portfolio';
-import { ArrowLeftIcon, GithubIcon, LinkedinIcon, YinYangIcon } from '@/components/ref/Icons';
+import { ArrowLeftIcon, GithubIcon, LinkedinIcon } from '@/components/ref/Icons';
 
 function InstagramIcon() {
   return (
@@ -19,6 +19,27 @@ function LeetcodeIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="home-social-icon">
       <path d="M13.48 0a1.38 1.38 0 0 0-.96.44L7.12 6.23l-3.86 4.12a5.3 5.3 0 0 0-1.2 2.11 5.6 5.6 0 0 0-.06 2.87c.1.36.22.7.4 1.02.32.64.76 1.24 1.3 1.78l4.27 4.2.04.03a5.8 5.8 0 0 0 8.06-.07l2.4-2.4a1.38 1.38 0 0 0-1.96-1.95l-2.4 2.39a3.02 3.02 0 0 1-4.2.04l-4.28-4.2a2.52 2.52 0 0 1-.88-1.79 2.7 2.7 0 0 1 .07-.52c.12-.42.35-.81.68-1.16L9.13 8.12c1.06-1.14 3.2-1.28 4.43-.28l3.5 2.83a1.38 1.38 0 0 0 1.73-2.15l-3.5-2.83c-.8-.65-1.77-1.04-2.77-1.2l2.02-2.16A1.38 1.38 0 0 0 13.48 0Zm-2.87 12.82a1.38 1.38 0 0 0 0 2.76h9.18a1.38 1.38 0 0 0 0-2.76Z" />
+    </svg>
+  );
+}
+
+/** Distinctive Quantum Core emblem featuring Yuvarajan's YJ monogram and orbital rings */
+function QuantumCoreIcon({ size = 180 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="quantum-core-svg">
+      <circle cx="100" cy="100" r="92" stroke="currentColor" strokeWidth="1.5" strokeDasharray="5 5" opacity="0.4" className="core-orbit-dash" />
+      <circle cx="100" cy="100" r="82" stroke="currentColor" strokeWidth="2.5" opacity="0.8" />
+      <path
+        d="M100 18 A82 82 0 0 1 100 182 A41 41 0 0 1 100 100 A41 41 0 0 0 100 18 Z"
+        fill="currentColor"
+        className="core-yin"
+      />
+      <circle cx="100" cy="59" r="10" fill="var(--core-dot-top, #fcf6f4)" className="core-dot-top" />
+      <circle cx="100" cy="141" r="10" fill="var(--core-dot-bot, #000000)" className="core-dot-bot" />
+      <circle cx="100" cy="100" r="26" fill="currentColor" stroke="var(--core-dot-top, #fcf6f4)" strokeWidth="2.5" />
+      <text x="100" y="106" textAnchor="middle" fill="var(--core-dot-top, #fcf6f4)" fontFamily="var(--font-display)" fontSize="15" fontWeight="700" letterSpacing="-0.02em">
+        YJ
+      </text>
     </svg>
   );
 }
@@ -45,10 +66,15 @@ export default function HomeExperience({ defaultOpen = false }: { defaultOpen?: 
       {/* Dark curtain for left 50% split screen */}
       <div className={`home-curtain ${open ? 'is-open' : ''}`} aria-hidden="true" />
 
-      {/* Top Left Logo */}
-      <Link href="/" className={`home-logo ${open ? 'is-open' : ''}`} aria-label={`${person.name} Home`}>
-        {person.initials}
-      </Link>
+      {/* Top Left Branding */}
+      <div className={`home-brand-wrap ${open ? 'is-open' : ''}`}>
+        <Link href="/" className="home-logo" aria-label={`${person.name} Home`}>
+          {person.initials}
+        </Link>
+        <span className="home-brand-status">
+          <span className="pulse-dot" /> Open to Roles
+        </span>
+      </div>
 
       {/* Top Center Back Button (visible when open to close modal) */}
       {open && (
@@ -58,13 +84,13 @@ export default function HomeExperience({ defaultOpen = false }: { defaultOpen?: 
           onClick={() => setOpen(false)}
           aria-label="Close introduction"
         >
-          <ArrowLeftIcon size={24} />
+          <ArrowLeftIcon size={22} />
         </button>
       )}
 
-      {/* Top Right "Say hi.." */}
+      {/* Top Right "Let's connect" */}
       <a className="home-sayhi" href={`mailto:${contactInfo.email}`}>
-        Say hi..
+        Say hello ↗
       </a>
 
       {/* Left Vertical Rail */}
@@ -95,7 +121,7 @@ export default function HomeExperience({ defaultOpen = false }: { defaultOpen?: 
       {/* Right Vertical Rail */}
       <div className="home-rail-right">
         <Link className="home-rail-link home-feats-link" href="/experience">
-          Feats
+          Journey
         </Link>
       </div>
 
@@ -105,20 +131,37 @@ export default function HomeExperience({ defaultOpen = false }: { defaultOpen?: 
           About
         </Link>
         <Link className="home-bottom-link home-skills-link" href="/skills">
-          My Skills
+          Skills
         </Link>
       </div>
 
-      {/* Center Intro Box (appears when opened) */}
+      {/* Center Intro Card with Architectural Corner Accents */}
       {open && (
         <div className="home-intro-card" role="region" aria-label="Introduction">
+          <span className="card-bracket bracket-tl" />
+          <span className="card-bracket bracket-tr" />
+          <span className="card-bracket bracket-bl" />
+          <span className="card-bracket bracket-br" />
+
           <div className="home-intro-sub home-intro-copy">
+            <div className="home-intro-meta-pill">
+              <span className="pulse-dot-indigo" /> SIH 2026 Top 40 Finalist
+            </div>
             <h1 className="home-intro-greeting">Hi,</h1>
             <h2 className="home-intro-name">I&apos;m {person.name}.</h2>
+            <p className="home-intro-role-lead">AI Engineer · ECE Student · Builder</p>
             <p className="home-intro-desc">
-              AI Engineer • ECE Student • Builder. I make AI-powered tools and web apps,
-              and I was a top 40 finalist in Smart India Hackathon 2026.
+              Building AI companions, computer-vision defense, and multilingual voice agents.
+              Passionate about shipping end-to-end intelligent systems.
             </p>
+            <div className="home-intro-actions">
+              <Link href="/work" className="home-intro-btn home-intro-btn--primary">
+                View 4 Main Projects →
+              </Link>
+              <Link href="/about" className="home-intro-btn home-intro-btn--secondary">
+                About Me
+              </Link>
+            </div>
           </div>
           <div className="home-intro-sub home-intro-portrait">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -131,18 +174,18 @@ export default function HomeExperience({ defaultOpen = false }: { defaultOpen?: 
         </div>
       )}
 
-      {/* Center Yin-Yang Button (moves to bottom-right when open) */}
+      {/* Center Signature Quantum Core Button */}
       <button
         type="button"
         className={`home-yinyang-button ${open ? 'is-open' : ''}`}
         onClick={() => setOpen((prev) => !prev)}
         aria-expanded={open}
-        aria-label={open ? 'Close introduction' : 'Open introduction'}
+        aria-label={open ? 'Close introduction' : 'Explore introduction'}
       >
         <div className="yinyang-spin">
-          <YinYangIcon size={open ? 96 : 190} />
+          <QuantumCoreIcon size={open ? 96 : 190} />
         </div>
-        {!open && <span className="yinyang-click-text">click here</span>}
+        {!open && <span className="yinyang-click-text">explore portfolio</span>}
       </button>
     </div>
   );

@@ -1,23 +1,23 @@
-import Link from 'next/link';
+import type { Metadata } from 'next';
 import { legal } from '@/data/content';
+import PageShell from '@/components/site/PageShell';
 
-export const metadata = { title: 'Privacy', alternates: { canonical: '/legal/privacy' } };
+export const metadata: Metadata = { title: 'Privacy', alternates: { canonical: '/legal/privacy' } };
 
 export default function PrivacyPage() {
   return (
-    <main id="main" className="legal wrap">
-      <p className="mono sec-head__path">
-        <Link href="/">← back home</Link>
-      </p>
-      <h1 className="sec-head__title">Privacy</h1>
-      <p className="legal__meta mono">Last updated {legal.updated}</p>
-      {legal.privacy.map((s) => (
-        <section key={s.h}>
-          <h2>{s.h}</h2>
-          <p>{s.p}</p>
-        </section>
-      ))}
-      <p className="legal__note mono">{legal.disclaimer}</p>
-    </main>
+    <PageShell index="—" ghost="PRIVACY" title="Legal" className="prose-page">
+      <h1 className="page-title">Privacy</h1>
+      <div className="prose">
+        <p className="eyebrow">Last updated {legal.updated}</p>
+        {legal.privacy.map((section) => (
+          <section key={section.h}>
+            <h2>{section.h}</h2>
+            <p>{section.p}</p>
+          </section>
+        ))}
+        <p className="eyebrow">{legal.disclaimer}</p>
+      </div>
+    </PageShell>
   );
 }

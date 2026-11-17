@@ -1,43 +1,11 @@
-import Loader from '@/components/Loader';
-import Header from '@/components/Header';
-import CommandPalette from '@/components/CommandPalette';
-import Hero from '@/components/Hero';
-import Work from '@/components/Work';
-import Journey from '@/components/Journey';
-import Stack from '@/components/Stack';
-import Shell from '@/components/Shell';
-import Ask from '@/components/Ask';
-import Contact from '@/components/Contact';
-import Footer from '@/components/Footer';
-import Motion from '@/components/Motion';
-import Toaster from '@/components/Toaster';
-import WorldSpy from '@/components/WorldSpy';
-import WorldSweep from '@/components/WorldSweep';
-import { getExperience, getProjects, getSkills } from '@/lib/data';
+import HomeExperience from '@/components/site/HomeExperience';
 
-export default function Page() {
-  return (
-    <>
-      <a className="skip" href="#work">
-        Skip to content
-      </a>
-      <Loader />
-      <Header />
-      <CommandPalette />
-      <main id="main">
-        <Hero />
-        <Work initial={getProjects()} />
-        <Journey initial={getExperience()} />
-        <Stack initial={getSkills()} />
-        <Shell />
-        <Ask />
-        <Contact />
-      </main>
-      <Footer />
-      <Motion />
-      <Toaster />
-      <WorldSpy />
-      <WorldSweep />
-    </>
-  );
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ open?: string }>;
+}) {
+  const params = await searchParams;
+  const initialOpen = params?.open === 'true';
+  return <HomeExperience defaultOpen={initialOpen} />;
 }

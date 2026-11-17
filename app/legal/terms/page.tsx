@@ -1,23 +1,23 @@
-import Link from 'next/link';
+import type { Metadata } from 'next';
 import { legal } from '@/data/content';
+import PageShell from '@/components/site/PageShell';
 
-export const metadata = { title: 'Terms', alternates: { canonical: '/legal/terms' } };
+export const metadata: Metadata = { title: 'Terms', alternates: { canonical: '/legal/terms' } };
 
 export default function TermsPage() {
   return (
-    <main id="main" className="legal wrap">
-      <p className="mono sec-head__path">
-        <Link href="/">← back home</Link>
-      </p>
-      <h1 className="sec-head__title">Terms</h1>
-      <p className="legal__meta mono">Last updated {legal.updated}</p>
-      {legal.terms.map((s) => (
-        <section key={s.h}>
-          <h2>{s.h}</h2>
-          <p>{s.p}</p>
-        </section>
-      ))}
-      <p className="legal__note mono">{legal.disclaimer}</p>
-    </main>
+    <PageShell index="—" ghost="TERMS" title="Legal" className="prose-page">
+      <h1 className="page-title">Terms</h1>
+      <div className="prose">
+        <p className="eyebrow">Last updated {legal.updated}</p>
+        {legal.terms.map((section) => (
+          <section key={section.h}>
+            <h2>{section.h}</h2>
+            <p>{section.p}</p>
+          </section>
+        ))}
+        <p className="eyebrow">{legal.disclaimer}</p>
+      </div>
+    </PageShell>
   );
 }

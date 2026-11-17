@@ -1,88 +1,86 @@
 import type { Metadata, Viewport } from 'next';
-import { Instrument_Serif, Inter, JetBrains_Mono } from 'next/font/google';
-import { education, profile, site, visibleLinks } from '@/data/content';
-import { DEFAULT_WORLD, initialWorldScript, themeColors, worldsCss } from '@/data/worlds';
+import type { ReactNode } from 'react';
+import { contactInfo, person, socials } from '@/data/portfolio';
+import { CursorGlow, Header, ParticleField, QuickNav, SocialRail } from '@/components/site/Chrome';
 import './globals.css';
 
-// Provisional font choices, see MISSING.md.
-const display = Instrument_Serif({ subsets: ['latin'], weight: '400', style: ['normal', 'italic'], variable: '--font-display' });
-const body = Inter({ subsets: ['latin'], variable: '--font-body' });
-const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://portfolio-six-blue-80.vercel.app';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(site.url),
-  title: { default: site.title, template: `%s · ${site.title}` },
-  description: site.description,
-  applicationName: site.title,
-  authors: [{ name: site.personName, url: site.url }],
-  creator: site.personName,
-  keywords: site.keywords,
+  metadataBase: new URL(siteUrl),
+  title: { default: `${person.name} | AI Engineer, Builder`, template: `%s | ${person.name}` },
+  description: person.description,
+  applicationName: `${person.name} Portfolio`,
+  authors: [{ name: person.name, url: siteUrl }],
+  creator: person.name,
+  keywords: ['Yuvarajan J', 'ECE', 'developer', 'AI', 'Python', 'portfolio', 'Hosur'],
   alternates: { canonical: '/' },
   openGraph: {
     type: 'profile',
     url: '/',
-    siteName: site.title,
-    title: site.title,
-    description: site.description,
+    siteName: `${person.name} Portfolio`,
+    title: `${person.name} | AI Engineer, Builder`,
+    description: person.description,
     locale: 'en_IN',
-    firstName: site.firstName,
-    lastName: site.lastName,
   },
-  twitter: { card: 'summary', title: site.title, description: site.description },
-  robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
-  verification: { google: 'MDitVXSWxdiE_h-rQBEjVgf0brx-cAT_NV5c_nFNSyU' },
+  twitter: { card: 'summary_large_image', title: `${person.name} | AI Engineer, Builder`, description: person.description },
+  robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {
-  themeColor: themeColors[DEFAULT_WORLD], // updated per world at runtime (lib/world.ts)
+  themeColor: '#000000',
+  colorScheme: 'dark',
   width: 'device-width',
   initialScale: 1,
 };
 
-/** Site entity so Google can associate the name with the homepage. */
-const websiteLd = {
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  name: site.title,
-  alternateName: profile.name,
-  url: site.url,
-  inLanguage: 'en-IN',
-};
-
-/** Structured data so search engines know the site is about this person. */
 const personLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
-  name: site.personName,
-  alternateName: profile.name,
-  url: site.url,
-  jobTitle: profile.shortRole,
-  email: `mailto:${profile.email}`,
-  address: { '@type': 'PostalAddress', addressLocality: 'Hosur', addressRegion: 'Tamil Nadu', addressCountry: 'IN' },
-  alumniOf: { '@type': 'CollegeOrUniversity', name: education.college.name },
-  sameAs: visibleLinks().map((l) => l.href),
+  name: person.name,
+  url: siteUrl,
+  jobTitle: person.role,
+  email: `mailto:${contactInfo.email}`,
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Hosur',
+    addressRegion: 'Tamil Nadu',
+    addressCountry: 'IN',
+  },
+  sameAs: [socials.github, socials.linkedin, socials.leetcode, socials.instagram],
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+const websiteLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: `${person.name} Portfolio`,
+  url: siteUrl,
+  inLanguage: 'en-IN',
+  publisher: { '@type': 'Person', name: person.name },
+};
+
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`} suppressHydrationWarning>
+    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
-        {/* World palettes, generated from data/worlds.ts. */}
-        <style id="worlds" dangerouslySetInnerHTML={{ __html: worldsCss() }} />
-        {/* Start every fresh visit on the hero before first paint. */}
-        <script dangerouslySetInnerHTML={{ __html: initialWorldScript }} />
-        {/* Hide content under paper until the boot loader mounts (first visit per session only). */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              "try{if(location.pathname==='/'&&sessionStorage.getItem('yj:booted')!=='1'&&!matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.classList.add('boot-pending');setTimeout(function(){document.documentElement.classList.remove('boot-pending')},3000)}}catch(e){}",
-          }}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font -- global stylesheet in the root layout */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Karla:wght@300;400;500;600;700&family=Pacifico&family=Source+Sans+Pro:wght@400;600;700&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+          rel="stylesheet"
         />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteLd) }} />
       </head>
       <body>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteLd) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personLd) }} />
-        {children}
+        <a className="skip-link" href="#main">Skip to content</a>
+        <ParticleField />
+        <Header />
+        <SocialRail />
+        <QuickNav />
+        <CursorGlow />
+        <main id="main">{children}</main>
       </body>
     </html>
   );

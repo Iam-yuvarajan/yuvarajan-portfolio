@@ -24,6 +24,13 @@ export const metadata: Metadata = {
     locale: 'en_IN',
   },
   twitter: { card: 'summary_large_image', title: `${person.name} | AI Engineer, Builder`, description: person.description },
+  icons: {
+    icon: [
+      { url: '/logo.png', type: 'image/png' },
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/logo.png',
+  },
   robots: { index: true, follow: true },
 };
 
@@ -63,6 +70,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
+        <link rel="icon" type="image/png" href="/logo.png" />
+        <link rel="apple-touch-icon" href="/logo.png" />
+        <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* eslint-disable-next-line @next/next/no-page-custom-font -- global stylesheet in the root layout */}
